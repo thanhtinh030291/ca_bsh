@@ -23,6 +23,7 @@ class HBS_MR_MEMBER extends  BaseModelDB2
         $CL_LINE = HBS_CL_LINE::where('memb_oid',$this->memb_oid)->where('REV_DATE', null)->get();
         return $CL_LINE;
     }
+    
     public function getMrMemberEventAttribute()
     {
         $MR_MBR_EVENT = HBS_MR_MEMBER_EVENT::where('memb_oid',$this->memb_oid)->get();

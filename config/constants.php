@@ -17,8 +17,8 @@ return[
     'PUSHER_APP_ID' => env('PUSHER_APP_ID'),
     'PUSHER_APP_CLUSTER' => env('PUSHER_APP_CLUSTER'),
     'VAPID_PUBLIC_KEY' => env('VAPID_PUBLIC_KEY'),
-    'mount_disk_hbs' => 'fubonprod',
-    'mount_dlvn' => "http://128.0.11.233/fubonprod/",
+    'mount_disk_hbs' => 'bshuat_hbs_report',
+    'mount_dlvn' => "http://128.0.11.233/bshuat_hbs_report/",
     
     'attachUpload'   => '/public/attachEmail/',
     
@@ -66,8 +66,8 @@ return[
     'token_mantic' => 'J-r0_8vFCDq71QSNve4wq9ICXy-mFsce',
     'url_mantic' => 'https://uat-etalk.pacificcross.com.vn/',
     'url_mantic_api' => 'https://uat-etalk.pacificcross.com.vn/',
-    'url_cps' => 'https://cpsfubon.pacificcross.com.vn/index.php/',
-    'api_cps' => 'https://cpsfubon.pacificcross.com.vn/index.php/api/',
+    'url_cps' => 'https://cpsbsh-uat.pacificcross.com.vn/index.php/',
+    'api_cps' => 'https://cpsbsh-uat.pacificcross.com.vn//index.php/api/',
     'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
     'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
     'url_hbs' => 'http://192.168.0.221:8030/',

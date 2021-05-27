@@ -4,7 +4,9 @@ var editor_config = {
     path_absolute: "/",
     selector: "textarea.editor",
     branding: false,
-    
+    paste_retain_style_properties: "all",
+    keep_styles: true,
+    schema: "html4",
     fontsize_formats: "8pt 10pt 11pt 12pt 14pt 18pt 24pt 36pt",
     plugins: [
         "advlist autolink lists link image charmap print preview hr anchor pagebreak",
@@ -13,7 +15,7 @@ var editor_config = {
         "emoticons template paste textcolor colorpicker textpattern"
     ],
     toolbar:
-            ["insertfile undo redo | styleselect | bold italic sizeselect fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media",
+            ["insertfile undo redo | styleselect | bold italic sizeselect fontselect fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media",
             "applicantName | IOPDiag | PRefNo | PhName  | memberNameCap | ltrDate | pstAmt | apvAmt | payMethod | deniedAmt | CSRRemark | TermRemark | tableInfoPayment | benefitOfClaim | createrSign | approveSign | claimNo | memRefNo | invoicePatient | time_pay | paymentAmt"
             ]
         ,

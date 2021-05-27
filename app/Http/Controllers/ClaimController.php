@@ -711,7 +711,10 @@ class ClaimController extends Controller
                 //     $to_user = User::whereHas("roles", function($q){ $q->where("name", "QC"); })->get()->pluck('id')->toArray();
                 //     $to_user = [Arr::random($to_user)];
                 // }
-                if(  $user->hasRole('Claim Independent') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 15000000){
+                if($user->hasRole('Claim Independent')){
+                    $status_change[0] = 10; //QC approved
+                }
+                if(  $user->hasRole('Claim Independent') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 10000000){
                     $to_user = [$user_create->manager];
                 }
                 
@@ -732,7 +735,7 @@ class ClaimController extends Controller
                 
                 // Claim GOP
                 
-                if($user->hasRole('ClaimGOP') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 50000000){
+                if($user->hasRole('ClaimGOP') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 10000000){
                     $to_user = Setting::findOrFail(1)->manager_gop_claim;
                 }
                 if( $user->hasRole('ManagerGOP') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 100000000){
@@ -1182,24 +1185,16 @@ class ClaimController extends Controller
             $data = $this->letter($request->letter_template_id , $request->claim_id, $request->export_letter_id);
         }
         
-        if($claim->claim_type == "M"){
-            header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-            header("Expires: 0");//no-cache
-            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");//no-cache
-            header("content-disposition: attachment;filename={$data['namefile']}.doc");
-            echo "<html>";      
-            echo "<body>";
-            echo $data['content'];
-            echo "</body>";
-            echo "</html>";
-        }else{
+       
             $data['content'] = "<html><body>".$data['content']."</body></html>";
             //$create_user_sign = getUserSignThumb($export_letter->created_user);
             $create_user_sign = $user_create->name;
             $data['content'] = str_replace('[[$per_creater_sign]]', $create_user_sign, $data['content']);
             $data['content'] = str_replace('[[$per_approve_sign]]', "", $data['content']);
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 225, 'margin_left' => 22]);
+            
             $match_form_gop = preg_match('/(FORM GOP)/', $export_letter->letter_template->name , $matches);
+            $match_gop = preg_match('/GOP/', $export_letter->letter_template->name , $matches_g);
             if($match_form_gop){
                 $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 35]);
                 $fileName = storage_path("app/public/sortedClaim")."/". $claim->hospital_request->url_form_request;
@@ -1230,8 +1225,19 @@ class ClaimController extends Controller
                     <div style="text-align: center">'.$claim->barcode.'</div></div>');
                 $mpdf->WriteHTML($data['content']);
     
-            }else{
+            }elseif($match_gop){
                 $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+                $mpdf->WriteHTML('
+                <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
+                    <img src="'.asset("images/header.jpg").'" alt="head">
+                </div>');
+                $mpdf->SetHTMLFooter('
+                <div style="text-align: right; font-weight: bold;">
+                    <img src="'.asset("images/footer.png").'" alt="foot">
+                </div>');
+                $mpdf->WriteHTML($data['content']);
+            }else{
+                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 32, 'margin_bottom' => 30]);
                 $mpdf->WriteHTML('
                 <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
                     <img src="'.asset("images/header.jpg").'" alt="head">
@@ -1248,7 +1254,7 @@ class ClaimController extends Controller
             header("Cache-Control: must-revalidate, post-check=0, pre-check=0");//no-cache
             header("content-disposition: attachment;filename={$data['namefile']}.pdf");
             echo $mpdf->Output($data['namefile'].'.pdf',\Mpdf\Output\Destination::STRING_RETURN);
-        }
+        
     }
 
     public function exportLetterPDF(Request $request){
@@ -1368,6 +1374,15 @@ class ClaimController extends Controller
             $Provider->addr4,
         ]);
         $tableInfo = $this->tableInfoPayment($HBS_CL_CLAIM);
+        $incur =$HBS_CL_CLAIM->HBS_CL_LINE->map(function ($c) {
+            $q=  collect($c)->only(['incur_date_from', 'incur_date_to']);
+            if($q['incur_date_from'] == $q['incur_date_to']){
+                return str_replace(" 00:00:00", "",$q['incur_date_from']) ;
+            }else{
+                return str_replace(" 00:00:00", "",$q['incur_date_from']) .' đến ' . str_replace(" 00:00:00", "",$q['incur_date_to']);
+            }
+        })->unique()->toArray();
+        $claimHistory = $this->claimHistory($HBS_CL_CLAIM);
         $incurDateTo = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_to);
         $incurDateFrom = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_from);
         $RBGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('PD_BEN_HEAD.ben_head',['RB'])->sum('app_amt');
@@ -1386,6 +1401,9 @@ class ClaimController extends Controller
         $diffIncur_extb = data_get($claim->hospital_request,'incur_time_extb',null) ?  "/".data_get($claim->hospital_request,'incur_time_extb') : "" ;
         $deniedAmt = $HBS_CL_CLAIM->sumPresAmt - (int)$sumAppAmt;
         $content = $letter->template;
+        $content = str_replace('[[$clNo]]', $claim->code_claim_show , $content);
+        $content = str_replace('[[$claimHistory]]', $claimHistory , $content);
+        $content = str_replace('[[$memEffDate]]', Carbon::parse($HBS_CL_CLAIM->member->eff_date)->format('d/m/Y') , $content);
         $content = str_replace('[[$ProvPstAmt]]', formatPrice(data_get($claim->hospital_request,'prov_gop_pres_amt') + $adminfee), $content);
         $content = str_replace('[[$ProDeniedAmt]]', formatPrice($sumAmountReject), $content);
         $content = str_replace('[[$ProvName]]', $Provider->prov_name, $content);
@@ -1397,6 +1415,7 @@ class ClaimController extends Controller
         $content = str_replace('[[$Diagnosis]]', $Diagnosis, $content);
         $content = str_replace('[[$incurDateTo]]',$incurDateTo, $content);
         $content = str_replace('[[$incurDateFrom]]', $incurDateFrom, $content);
+        $content = str_replace('[[$incur]]', implode(" ; ",$incur), $content);
         $content = str_replace('[[$diffIncur]]', $diffIncur , $content);
         $content = str_replace('[[$diffIncur_extb]]', $diffIncur_extb , $content);
         $content = str_replace('[[$CSR_REMASK_ALL_LINE]]', $CSR_REMASK_ALL_LINE , $content);
@@ -1432,7 +1451,7 @@ class ClaimController extends Controller
         $htm_infoReject = "";
         if ($deniedAmt != 0 || $CSRRemark) {
             $htm_infoReject = "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>
-            Chúng tôi rất tiếc khoản tiền {$deniedAmt} còn lại không được thanh toán vì:
+            Chúng tôi rất tiếc khoản tiền ".formatPrice($deniedAmt)." VNĐ còn lại không được thanh toán vì:
             </span></p>" .
             implode('', $CSRRemark) ."</br>". implode('', array_unique($TermRemark));
         }
@@ -1470,16 +1489,16 @@ class ClaimController extends Controller
             thead { display:table-header-group ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
             tfoot { display:table-footer-group ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
         </style>
-                <table style=" border: 1px solid black; border-collapse: collapse;">
-                    <thead>
+                <table style=" border: 1px solid #1e91e3; border-collapse: collapse;width: 100%">
+                    <thead style="background: aliceblue">
                         <tr>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt" rowspan="2">Quyền lợi</th>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền yêu cầu bồi thường (Căn cứ trên chứng từ hợp lệ) </th>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền thanh toán</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt" rowspan="2">Quyền lợi bảo hiểm</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền yêu cầu bồi thường </th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền bồi thường <br />(Căn cứ trên chứng từ hợp lệ)</th>
                         </tr>
                         <tr>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Đồng</th>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Đồng</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">(VNĐ)</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">(VNĐ)</th>
                         </tr>
                     <thead>';
         $IP = [];
@@ -1504,18 +1523,18 @@ class ClaimController extends Controller
             // nội trú
         foreach ($IP as $keyIP => $valueIP) {
             $html .= '<tr>
-                    <td style="border: 1px solid black; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Nội Trú</td>
-                    <td style="border: 1px solid black; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
-                    <td style="border: 1px solid black; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
+                    <td style="border: 1px solid #1e91e3; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt ; color: #1e91e3;">Nội Trú</td>
+                    <td style="border: 1px solid #1e91e3; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
+                    <td style="border: 1px solid #1e91e3; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                 </tr>';
             foreach ($valueIP as $key => $value) {
                 $range_pay = "";
                 
                 $html .=    '
                             <tr>
-                                <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
-                                <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt ; text-align: center; vertical-align: middle;">'.formatPrice($value->pres_amt).'</td>
-                                <td style="border: 1px solid black ; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->app_amt).'</td>
+                                <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
+                                <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt ; text-align: center; vertical-align: middle; color: #1e91e3;">'.formatPrice($value->pres_amt).'</td>
+                                <td style="border: 1px solid #1e91e3 ; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt ; color: #1e91e3;">'.formatPrice($value->app_amt).'</td>
                             </tr>
                             ';
                 $sum_pre_amt += $value->pres_amt;
@@ -1528,15 +1547,15 @@ class ClaimController extends Controller
             if($key == 0){
                 
                 $html .= '<tr>
-                            <td style="border: 1px solid black ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Ngoại Trú</td>
-                            <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
-                            <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
+                            <td style="border: 1px solid #1e91e3 ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">Ngoại Trú</td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                         </tr>';
             }
             $html .=    '<tr>
-                            <td style="border: 1px solid black ;font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
-                            <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->pres_amt).'</td>
-                            <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->app_amt).'</td>
+                            <td style="border: 1px solid #1e91e3 ;font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
+                            <td style="border: 1px solid #1e91e3; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.formatPrice($value->pres_amt).'</td>
+                            <td style="border: 1px solid #1e91e3; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.formatPrice($value->app_amt).'</td>
                         </tr>';
             $sum_pre_amt += $value->pres_amt;
             $sum_app_amt += $value->app_amt;
@@ -1547,24 +1566,24 @@ class ClaimController extends Controller
             if($key == 0){
                 
                 $html .= '<tr>
-                            <td style="border: 1px solid black ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Răng</td>
-                            <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
-                            <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
+                            <td style="border: 1px solid #1e91e3 ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">Răng</td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                         </tr>';
             }
             $html .=    '<tr>
-                            <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
-                            <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->pres_amt).'</td>
-                            <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->app_amt).'</td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
+                            <td style="border: 1px solid #1e91e3; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.formatPrice($value->pres_amt).'</td>
+                            <td style="border: 1px solid #1e91e3; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.formatPrice($value->app_amt).'</td>
                         </tr>';
             $sum_pre_amt += $value->pres_amt;
             $sum_app_amt += $value->app_amt;
         }
             $html .=    '<tr>
-                            <th style="border: 1px solid black ;font-family: arial, helvetica, sans-serif ; font-size: 11pt" >Tổng cộng:</th>
+                            <th style="border: 1px solid #1e91e3 ;font-family: arial, helvetica, sans-serif ; font-size: 11pt" >Tổng cộng:</th>
                             
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($sum_pre_amt).'</th>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">[[$time_pay]]</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.formatPrice($sum_pre_amt).'</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">[[$time_pay]]</th>
                         </tr>';
 
         $html .= '</tbody>';
@@ -2494,5 +2513,89 @@ class ClaimController extends Controller
         $claim->include_admin_fee = $request->include_admin_fee ? $request->include_admin_fee : 0;
         $claim->save();
         return redirect('/admin/claim/'.$id)->with('status', 'Đã cập nhật thành công');
+    }
+
+    public function claimHistory($HBS_CL_CLAIM){
+        $pocy_no = $HBS_CL_CLAIM->Police->pocy_no;
+        $plan_oid = data_get($HBS_CL_CLAIM->PolicePlan,'PD_PLAN.plan_oid');
+        
+        $limit_benefit = [];
+        $limit = \App\HBS_VW_RP_POLICY_PLAN_BEN_TYPE::where('plan_oid',$plan_oid)->with(['PD_PLAN'=>function ($q) {
+            $q->with(['PD_PLAN_LIMIT' => function ($k) {
+                $k->where('limit_type',"T");
+                $k->with('PD_BEN_HEAD');
+            }]);
+        }])->get();
+        
+        foreach ($limit as $key => $value) {
+           $str_type = $value->benefit_type;
+           $type = $value->scma_oid_ben_type;
+           foreach($value->PD_PLAN->PD_PLAN_LIMIT as $key2 => $value2){
+               if($value2->PD_BEN_HEAD[0]->scma_oid_ben_type == $type){
+                    $limit_benefit[] = $str_type . ": " . formatPrice($value2->amt_yr);
+               }
+           }
+        }
+        $limit_benefit = collect($limit_benefit)->unique()->toArray();
+        $claims = $HBS_CL_CLAIM->historyClaimCurrentYearCurrent;
+        $sum_app = 0;
+        $sum_row = $claims->count(); 
+        $html = '
+        <style type="text/css">
+            table { page-break-inside:auto ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
+            tr    { page-break-inside:avoid; page-break-after:auto ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
+            thead { display:table-header-group ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
+            tfoot { display:table-footer-group ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
+        </style>
+                <table style=" border: 1px solid #1e91e3; border-collapse: collapse;width: 100%">
+                    <thead style="background: aliceblue">
+                        <tr>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Claim số</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Giới hạn thanh toán <br />(VNĐ)</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Ngày khám</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Bệnh</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Quyền lợi <br />(IP/OP/DT/PA..)</th>
+                            <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền bồi thường <br />(VNĐ)</th>
+                        </tr>
+                    <thead>
+                    <tbody>';
+        foreach ($claims as $key => $value) {
+            $incur =$value->HBS_CL_LINE->map(function ($c) {
+                $q=  collect($c)->only(['incur_date_from', 'incur_date_to']);
+                if($q['incur_date_from'] == $q['incur_date_to']){
+                    return str_replace(" 00:00:00", "",$q['incur_date_from']) ;
+                }else{
+                    return str_replace(" 00:00:00", "",$q['incur_date_from']) .' to ' . str_replace(" 00:00:00", "",$q['incur_date_to']);
+                }
+            })->unique()->toArray();
+            
+            $hbs_diag = $value->HBS_CL_LINE->map(function ($c) {
+                return $c->RT_DIAGNOSIS->diag_desc;
+            })->unique()->toArray();
+            $benhead = $value->HBS_CL_LINE->map(function ($c) {
+                return str_replace("BENEFIT_TYPE_", "", $c->PD_BEN_HEAD->scma_oid_ben_type);
+            })->unique()->toArray();
+           
+            $sum_app += $value->SumAppAmt;
+            $html .=    '<tr>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.$value->cl_no.'</td>';
+            if($key == 0){
+                $html .= '<td rowspan="'.$sum_row.'" style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.implode("<br />",$limit_benefit).'</td>';
+            }
+                            
+            $html .=        '<td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.implode(" ; ",$incur).'</td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.implode(" ; ",$hbs_diag).'</td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.implode(" ; ",$benhead).'</td>
+                            <td style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.formatPrice($value->SumAppAmt).'</td>
+                        </tr>';
+        }
+        $html .=    '<tr>
+                        <th style="border: 1px solid #1e91e3 ;font-family: arial, helvetica, sans-serif ; font-size: 11pt" >Tổng cộng:</th>
+                        <th colspan="4" style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.'</th>
+                        <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; color: #1e91e3;">'.formatPrice($sum_app).'</th>
+                    </tr>';
+        $html .= '</tbody>';
+        $html .= '</table>';
+        return $html;
     }
 }
