@@ -428,7 +428,7 @@ function IOPDiag($HBS_CL_CLAIM, $claim_id){
                     case 'BENEFIT_TYPE_OP':
                         $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
                         $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                        $IOPDiag[] = "Chẩn đoán: " . $value->RT_DIAGNOSIS->diag_desc_vn ." <br>
+                        $IOPDiag[] = "Chẩn đoán: " . empty($value->RT_DIAGNOSIS->diag_desc_vn) ? $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn ." <br>
                                     Ngày khám: $from_date tại ". $value->prov_name . ".";
     
                         break;

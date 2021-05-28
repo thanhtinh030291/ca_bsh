@@ -961,7 +961,10 @@ class ClaimController extends Controller
                 'content' => $export_letter->approve['data_payment']
             ];
         }
-
+        $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
+        $res = json_decode($res->getBody(),true);
+        
+        
         try {
             $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
             $res = json_decode($res->getBody(),true);
@@ -2570,7 +2573,7 @@ class ClaimController extends Controller
             })->unique()->toArray();
             
             $hbs_diag = $value->HBS_CL_LINE->map(function ($c) {
-                return $c->RT_DIAGNOSIS->diag_desc;
+                return empty($c->RT_DIAGNOSIS->diag_desc_vn) ? $c->RT_DIAGNOSIS->diag_desc : $c->RT_DIAGNOSIS->diag_desc_vn;
             })->unique()->toArray();
             $benhead = $value->HBS_CL_LINE->map(function ($c) {
                 return str_replace("BENEFIT_TYPE_", "", $c->PD_BEN_HEAD->scma_oid_ben_type);
