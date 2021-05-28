@@ -107,7 +107,7 @@ class ClaimWordSheetController extends Controller
         $condition_field_show = function($q) use ($claimWordSheet){
             $q->whereIn('field_id',[2,14,15]);
         };
-        $MANTIS_BUG = MANTIS_BUG::where("project_id",1)->with(['CUSTOM_FIELD_STRING' => $condition_field_show, "BUG_TEXT"])->whereHas('CUSTOM_FIELD_STRING',$condition_field)->limit(7)->orderBy('id', 'DESC')->get();
+        //$MANTIS_BUG = MANTIS_BUG::where("project_id",1)->with(['CUSTOM_FIELD_STRING' => $condition_field_show, "BUG_TEXT"])->whereHas('CUSTOM_FIELD_STRING',$condition_field)->limit(7)->orderBy('id', 'DESC')->get();
         $claim_line = $member->ClaimLine;
         //rmove claim line curent
         $arr_clli_oid = $HBS_CL_CLAIM->HBS_CL_LINE->pluck('clli_oid')->toArray();
@@ -127,7 +127,7 @@ class ClaimWordSheetController extends Controller
         //dd($member->MR_MEMBER_EVENT->where('scma_oid_event_code', 'EVENT_CODE_EXPL')->first());
         $benefit = \App\HbsBenhead::pluck('name','name');
         
-        return view('claim_word_sheets.show', compact('claimWordSheet', 'claim', 'HBS_CL_CLAIM', 'member','claim_line', 'log_history', 'listReasonReject','count_bnf', 'MANTIS_BUG', 'benefit'));
+        return view('claim_word_sheets.show', compact('claimWordSheet', 'claim', 'HBS_CL_CLAIM', 'member','claim_line', 'log_history', 'listReasonReject','count_bnf', 'benefit'));
     }
 
     public function pdf(ClaimWordSheet $claimWordSheet){
