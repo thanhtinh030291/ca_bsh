@@ -833,7 +833,7 @@ class AjaxCommonController extends Controller
         $payment_method = str_replace("CL_PAY_METHOD_","",$HBS_CL_CLAIM->payMethod);
         $payment_method = $payment_method == 'CA' ? "CH" : $payment_method;
         $pocy_ref_no = $HBS_CL_CLAIM->Police->pocy_ref_no;
-        $memb_ref_no = $HBS_CL_CLAIM->member->memb_ref_no;
+        $memb_ref_no = $HBS_CL_CLAIM->member->mbr_no;
         $member_name = $HBS_CL_CLAIM->memberNameCap;
         return response()->json([ 'data' => $response,
                                 'data_full' => $response_full,
@@ -928,7 +928,7 @@ class AjaxCommonController extends Controller
         $client = new \GuzzleHttp\Client([
             'headers' => $headers
         ]);
-        $response = $client->request("POST", config('constants.api_cps').'send_payment/'. $request->cl_no , ['form_params'=>$body]);
+        $response = $client->request("POST", config('constants.api_cps').'send_payment/'. $request->cl_no , ['form_params'=>$body]);dd($response->getBody()->getContents());
         $response =  json_decode($response->getBody()->getContents());
         $rs=data_get($response,'code');
         if(data_get($response,'code') == "00" && data_get($response,'data') != null){

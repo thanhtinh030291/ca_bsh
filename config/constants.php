@@ -67,7 +67,7 @@ return[
     'url_mantic' => 'https://bsh-etalk-uat.pacificcross.com.vn/',
     'url_mantic_api' => 'https://bsh-etalk-uat.pacificcross.com.vn/',
     'url_cps' => 'https://cpsbsh-uat.pacificcross.com.vn/index.php/',
-    'api_cps' => 'https://cpsbsh-uat.pacificcross.com.vn//index.php/api/',
+    'api_cps' => 'https://cpsbsh-uat.pacificcross.com.vn/index.php/api/',
     'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
     'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
     'url_hbs' => 'http://192.168.0.221:8030/',
@@ -194,5 +194,5 @@ return[
         'accepted' => 81,
         'partiallyaccepted' =>82,
         'declined' => 83,
-    ],
+    ]
 ];

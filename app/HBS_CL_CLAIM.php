@@ -149,6 +149,12 @@ class HBS_CL_CLAIM extends  BaseModelDB2
         return round($sum);
     }
 
+    public function getSumOrgPresAmtAttribute(){
+        $clLines = $this->HBS_CL_LINE->toArray();
+        $sum = array_sum(array_column($clLines,'org_pres_amt'));
+        return round($sum);
+    }
+
     public function getSumAppAmtAttribute(){
         $clLines = $this->HBS_CL_LINE->toArray();
         $sum = array_sum(array_column($clLines,'app_amt'));

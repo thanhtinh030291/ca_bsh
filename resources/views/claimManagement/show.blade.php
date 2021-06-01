@@ -64,7 +64,6 @@ $totalAmount = 0;
                                     @if($data->claim_word_sheet)
                                     <a target="_blank" href="{{route('claimWordSheets.show', ['claimWordSheet' => $data->claim_word_sheet->id])}}" class="mt-3 btn btn-info">Link Work Sheet</a><br>
                                     @else
-                                        
                                         {{ Form::open(array('url' => route('claimWordSheets.store'))) }}
                                         {{ Form::hidden('claim_id', $data->id ) }}
                                         {{ Form::hidden('mem_ref_no', $data->clClaim->member->mbr_no ) }}
@@ -128,7 +127,7 @@ $totalAmount = 0;
                             {{ Form::label('type',  'Claim Code', array('class' => 'col-md-4')) }}
                             {{ Form::label('type', $data->code_claim_show , array('class' => 'col-md-8')) }}
 
-                            {{ Form::label('type',  'Claim Ref No', array('class' => 'col-md-4')) }}
+                            {{ Form::label('type',  'Barcode', array('class' => 'col-md-4')) }}
                             {{ Form::label('type', $data->barcode , array('class' => 'col-md-8')) }}
 
                             {{ Form::label('type',  'Etalk Link', array('class' => 'col-md-4')) }}

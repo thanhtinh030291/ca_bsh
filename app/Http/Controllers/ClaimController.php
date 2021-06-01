@@ -182,11 +182,11 @@ class ClaimController extends Controller
     {
         $claim_type = $request->claim_type;
         //validate
-        // $issue = MANTIS_CUSTOM_FIELD_STRING::where('value',(int)$request->barcode)->where('field_id',14)->get();
-        // if($issue->count() != 1){
-        //     $request->session()->flash('errorStatus', 'Phải tồn tại duy nhất 1 Common ID trên Health Etalk ');
-        //     return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
-        // }
+        $issue = MANTIS_BUG::where('id',(int)$request->barcode)->first();
+        if($issue == null){
+            $request->session()->flash('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
+            return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
+        }
         
         //end valid
         if ($request->_url_file_sorted) {
@@ -370,9 +370,11 @@ class ClaimController extends Controller
             $payment_method = "";
             $balance_cps = collect([]);
         }
-        $can_pay_rq = true;
+        $can_pay_rq = false;
         $count_ap = $export_letter->where('apv_amt',$approve_amt)->where('approve',"!=",null)->count();
-        if($count_ap > 0){
+        $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Ready To Pay')->first()->id;
+        $ready_to_pay = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$ready_to_pay_id)->where('value','Yes')->first();
+        if($count_ap > 0 && $ready_to_pay != null){
             $can_pay_rq = true;
         }
         $manager_gop_accept_pay = 'error';
@@ -622,6 +624,10 @@ class ClaimController extends Controller
         //validate
             $now = Carbon::now()->toDateTimeString();
             $HBS_CL_CLAIM = HBS_CL_CLAIM::findOrFail($claim->code_claim);
+            $issue = MANTIS_BUG::where('id',(int)$HBS_CL_CLAIM->barcode)->first();
+            if($issue == null){
+                return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
+            }
             // $count_provider_not = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('prov_oid',config('constants.not_provider'))->count();
             // if($count_provider_not > 0){
             //     return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Tồn tại provider: "BUMRUNGRAD INTERNATIONAL HOSPITAL" vui lòng cập nhật lại HBS ');
@@ -700,7 +706,9 @@ class ClaimController extends Controller
                 $export_letter->note = $data;
                 $export_letter->approve = null;
             }
-            if($status_change[1] == 'approved'){ //nofice
+            if($status_change[1] == 'approved'){ //nofice && update mantis customfield
+
+                $this->update_custom_field_mantis($HBS_CL_CLAIM);
                 // if($user->hasRole('Claim')){
                 //     $leader = $user->Leader;
                 //     if($leader != null){
@@ -711,6 +719,7 @@ class ClaimController extends Controller
                 //     $to_user = User::whereHas("roles", function($q){ $q->where("name", "QC"); })->get()->pluck('id')->toArray();
                 //     $to_user = [Arr::random($to_user)];
                 // }
+
                 if($user->hasRole('Claim Independent')){
                     $status_change[0] = 10; //QC approved
                 }
@@ -722,19 +731,8 @@ class ClaimController extends Controller
                     $to_user = [$user_create->header];
                 }
 
-                // Claim Independent
-                // if($claim->jetcase != 1 && $user_create->hasRole('Claim Independent') && $user->hasRole('QC')){
-                //     $to_user = [$user_create->supper];
-                // }
-                
-                //jetcase
-                // if($claim->jetcase == 1 && ($user->hasRole('Claim Independent') || $user->hasRole('Lead') || $user->hasRole('Claim') )){
-                //     $to_user = User::whereHas("roles", function($q){ $q->where("name", "QC"); })->get()->pluck('id')->toArray();
-                //     $to_user = [Arr::random($to_user)];
-                // }
                 
                 // Claim GOP
-                
                 if($user->hasRole('ClaimGOP') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 10000000){
                     $to_user = Setting::findOrFail(1)->manager_gop_claim;
                 }
@@ -2600,5 +2598,43 @@ class ClaimController extends Controller
         $html .= '</tbody>';
         $html .= '</table>';
         return $html;
+    }
+
+    public function update_custom_field_mantis($HBS_CL_CLAIM){
+        $vip = $HBS_CL_CLAIM->member->mbr_vip == "YN_Y" ? 'Yes' : 'No';
+        $amount_submit =  $HBS_CL_CLAIM->SumPresAmt ;
+        $org_amount_submit =  $HBS_CL_CLAIM->SumOrgPresAmt ;
+        $currency =  $amount_submit == $org_amount_submit ? 'VND' : 'USD';
+        $mantis_id = $HBS_CL_CLAIM->barcode;
+
+        $custom_field = \App\MANTIS_CUSTOM_FIELD::whereIn('name',['VIP', 'Amount Submitted', 'Currency'])->pluck('id','name');
+ 
+        \App\MANTIS_CUSTOM_FIELD_STRING::updateOrCreate(
+                ['field_id' => data_get($custom_field,'Currency'), 'bug_id' => $mantis_id],
+                [   
+                    'field_id' => data_get($custom_field,'Currency'),
+                    'bug_id' => $mantis_id,
+                    'value' => $currency
+                ]
+            );
+            
+        \App\MANTIS_CUSTOM_FIELD_STRING::updateOrCreate(
+                ['field_id' => data_get($custom_field,'Amount Submitted'), 'bug_id' => $mantis_id],
+                [
+                    'field_id' => data_get($custom_field,'Amount Submitted'),
+                    'bug_id' => $mantis_id,
+                    'value' => $org_amount_submit
+                ]
+            );
+        
+        \App\MANTIS_CUSTOM_FIELD_STRING::updateOrCreate(
+                ['field_id' => data_get($custom_field,'VIP'), 'bug_id' => $mantis_id],
+                [
+                    'field_id' => data_get($custom_field,'VIP'),
+                    'bug_id' => $mantis_id,
+                    'value' => $vip
+                ]
+        ); 
+        
     }
 }
