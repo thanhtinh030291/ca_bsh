@@ -187,6 +187,10 @@ class ClaimController extends Controller
             $request->session()->flash('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
             return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
         }
+        $id_project_mb = DB::connection('mysql_mantic')->table('mantis_project_table')->where('name','CLM - Mobile')->first()->id;
+        if($issue->project_id == $id_project_mb){
+            $dataNew['project'] = 'mobile';
+        }
         
         //end valid
         if ($request->_url_file_sorted) {
@@ -372,7 +376,7 @@ class ClaimController extends Controller
         }
         $can_pay_rq = false;
         $count_ap = $export_letter->where('apv_amt',$approve_amt)->where('approve',"!=",null)->count();
-        $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Ready To Pay')->first()->id;
+        $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Pay Claim')->first()->id;
         $ready_to_pay = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$ready_to_pay_id)->where('value','Yes')->first();
         if($count_ap > 0 && $ready_to_pay != null){
             $can_pay_rq = true;
@@ -882,6 +886,9 @@ class ClaimController extends Controller
             'text_note' => " Dear CS,  \n Claim gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,",
 
         ];
+        if($claim->project == 'mobile'){
+            $body['text_note'] = "Dear {$HBS_CL_CLAIM->memberNameCap},  \n PCV gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,";
+        }
         
             // gop
             $mpdf = null;
