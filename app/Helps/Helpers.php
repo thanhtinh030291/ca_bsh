@@ -800,3 +800,47 @@ function getTokenMfile(){
     }
     return  $setting->token_mfile;
 }
+
+function send_message_mobile($title,$message,$claim, $file_base64 = null){
+    $headers = [
+        'Content-Type' => 'application/json',
+    ];
+    $body = [
+        'title' => $title,
+        'message' => $message,
+        'mantis_id' => $claim->barcode,
+        'company' => config('constants.company'),
+        'file'    => $file_base64
+    ];
+    $client = new \GuzzleHttp\Client([
+        'headers' => $headers
+    ]);
+    try {
+        $client = new \GuzzleHttp\Client([
+            'headers' => $headers
+        ]);
+        $response = $client->request("POST", config('constants.url_mobile_api').'claim/send-message' , ['form_params'=>$body]);
+        $response =  json_decode($response->getBody()->getContents());
+        return $response;
+    }catch (GuzzleHttp\Exception\ClientException $e) {
+        $response = $e->getResponse()->getBody(true);
+        $response = json_decode((string)$response);
+        return $response;
+    }
+    
+}
+
+function renderMessageInvoice($id){
+    $claim = \App\Claim::findOrFail($id);
+    $str = "Hồ sơ yêu cầu bồi thường của bạn đã được xét duyêt.";
+    if(	$claim->original_invoice_type == 'No' && $claim->original_invoice_no_not_ready != null){
+        $str .= "\n + Vui lòng gửi hóa đơn VAT bản gốc số '$claim->original_invoice_no_not_ready' về địa chỉ  Lầu 16, Tòa nhà Royal -  tháp B,  235 Nguyễn Văn Cừ, Quận  1, HCM, Việt Nam.";
+    }
+    if(	$claim->e_invoice_type == 'No' && $claim->e_invoice_no_not_ready != null){
+        $str .= "\n + Vui lòng cung cấp thêm thông tin hóa đơn VAT số '$claim->e_invoice_no_not_ready' .";
+    }
+    if(	$claim->converted_invoice_type == 'No' && $claim->converted_invoice_no_not_ready != null){
+        $str .= "\n + Vui lòng gửi hóa đơn VAT đã chuyển đổi bản gốc số '$claim->original_invoice_no_not_ready' về địa chỉ  Lầu 16, Tòa nhà Royal -  tháp B,  235 Nguyễn Văn Cừ, Quận  1, HCM, Việt Nam.";
+    }
+    return $str;
+}

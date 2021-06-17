@@ -7,6 +7,7 @@ return[
     'formClaimStorage'  => '/storage/formClaim/',
     'sortedClaimUpload'   => '/public/sortedClaim/',
     'sotedClaimStorage'  => '/storage/sortedClaim/',
+    'company' => 'bsh',
 
     'avantarUpload' => '/public/avantar/',
     'avantarStorage' => '/storage/avantar/',
@@ -48,22 +49,23 @@ return[
         '1' => 'Edit',
         '2' => 'Note Save',
     ],
+    'link_mfile' => '192.168.0.235/mfile/public/api/',
+    'account_mfile' => 'admin@pacificcross.com.vn',
+    'pass_mfile' => '123456',
+    'mode_mfile' => 'bsh',
 
-    // 'token_mantic' => 'XxDRoy2l64QiuBnaaFY1_yjbfCYUhvNb',
-    // 'url_mantic' => 'https://fubon-etalk.pacificcross.com.vn/',
-    // 'url_mantic_api' => 'https://fubon-etalk.pacificcross.com.vn/',
-    // 'url_cps' => 'https://cpscathay.pacificcross.com.vn/index.php/',
-    // 'api_cps' => 'https://cpscathay.pacificcross.com.vn/index.php/api/',
+    // 'token_mantic' => '28Frxz5e2VOvbVJiFxEOkxs0bDrGxwmH',
+    // 'url_mantic' => 'https://bsh-etalk.pacificcross.com.vn/',
+    // 'url_mantic_api' => 'https://bsh-etalk.pacificcross.com.vn/',
+    // 'url_cps' => 'https://cpsbsh.pacificcross.com.vn/index.php/',
+    // 'api_cps' => 'https://cpsbsh.pacificcross.com.vn/index.php/api/',
     // 'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
     // 'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
     // 'url_hbs' => 'http://192.168.0.221:8030/',
-    'link_mfile' => '192.168.0.235/mfile/public/api/',
-    //'link_mfile' => 'local/MFilesAPI/trunk/public/api/',
-    'account_mfile' => 'admin@pacificcross.com.vn',
-    'pass_mfile' => '123456',
-    'mode_mfile' => 'fubon',
+    //'url_mobile_api'  => 'http://127.0.0.1:8000/api/',
+    
     //test
-    'token_mantic' => '0U6jmTTcFdqotXk2m37ij_2MCQuFYz3k',
+    'token_mantic' => 'tXC0m7sn3gRqUeLGN-O8fWAOXoi0_Xgl',
     'url_mantic' => 'https://bsh-etalk-uat.pacificcross.com.vn/',
     'url_mantic_api' => 'https://bsh-etalk-uat.pacificcross.com.vn/',
     'url_cps' => 'https://cpsbsh-uat.pacificcross.com.vn/index.php/',
@@ -71,6 +73,7 @@ return[
     'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
     'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
     'url_hbs' => 'http://192.168.0.221:8030/',
+    'url_mobile_api'  => 'https://mobile-claim-uat.pacificcross.com.vn/api/',
     //end test
     'grant_type' => 'client_credentials',
     'url_query_online' => 'https://pcvwebservice.pacificcross.com.vn/bluecross/query_rest.php?id=',
@@ -194,5 +197,11 @@ return[
         'accepted' => 81,
         'partiallyaccepted' =>82,
         'declined' => 83,
+        'inforequest' => 70,
+    ],
+    'invoice_type' => [
+        'original_invoice' => 'Hóa đơn góc',
+        'e_invoice' => 'Hóa đơn điện tử',
+        'converted_invoice' => 'Hóa đơn đã chuyển đổi',
     ]
 ];

@@ -163,7 +163,8 @@ class HBS_CL_CLAIM extends  BaseModelDB2
 
     public function getInvNoAttribute(){
         $clLines = $this->HBS_CL_LINE->toArray();
-        $kq = implode(",",array_column($clLines,'inv_no'));
+        $keywords = array_map('trim', preg_split("/(,|;)/", implode(",",array_column($clLines,'inv_no'))));
+        $kq = implode(",",$keywords);
         return $kq;
     }
     

@@ -10,6 +10,7 @@ $totalAmount = 0;
     <link href="{{asset('css/formclaim.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{asset('css/ckeditor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{asset('plugins/datatables/dataTables.bootstrap4.min.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
+    <link href="{{asset('css/jquery.tag-editor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <style>
         .disableRow {
             background-color: lightslategrey;
@@ -76,7 +77,7 @@ $totalAmount = 0;
 
                                     {{-- payment request  --}}
                                     {{ Form::label('Payment_Request', 'Payment Request', array('class' => 'labelas')) }}
-                                    <p class="text-danger">Yêu cầu thanh toán chỉ hiển thị khi Được approved! </p>
+                                    
                                     @if($can_pay_rq == true)
                                             {!! Form::button('Yêu Cầu Finance Thanh Toán', ['data-toggle' => "modal" ,  
                                                 'data-target' => "#requetPaymentModal",
@@ -85,6 +86,10 @@ $totalAmount = 0;
                                                 
                                                 ]) !!}
                                     @endif
+                                    <div class="card mt-2">
+                                        {{-- invoiceModal--}}
+                                        @include('claimManagement.invoiceModal')
+                                    </div>
                                 </div>
                                 <div class="col-md-5">
                                     {{ Form::open(array('url' => '/admin/claim/uploadSortedFile/'.$data->id, 'method'=>'post', 'files' => true))}}
@@ -104,6 +109,8 @@ $totalAmount = 0;
                                     </div>
                                     <!-- End file image -->
                                     {{ Form::close() }}
+                                    {{ Form::label('inv_nos', 'Số hóa đơn (HBS)', array('class' => 'labelas')) }}
+                                    {{ Form::text('inv_nos', $inv_nos, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>
                                     
                                     {{-- <button type="button" onclick="sendMfile();" class="btn btn-success " ><i class="fa fa-mixcloud" aria-hidden="true"></i> Send To M-Files</button>
                                     @if ($data->LogMfile != null)
@@ -131,7 +138,7 @@ $totalAmount = 0;
                             {{ Form::label('type', $data->barcode , array('class' => 'col-md-8')) }}
 
                             {{ Form::label('type',  'Etalk Link', array('class' => 'col-md-4')) }}
-                            <a class="btn btn-primary col-md-8 " target="_blank" href="{{config('constants.url_mantic').'view.php?id='.$data->mantis_id }}">Link</a>
+                            <a class="btn btn-primary col-md-8 " target="_blank" href="{{config('constants.url_mantic').'view.php?id='.$data->barcode }}">Link</a>
                             
                             
                             {{ Form::label('type',  __('message.account_create'), array('class' => 'col-md-4')) }}
@@ -472,6 +479,7 @@ $totalAmount = 0;
 <script src="{{asset('plugins/datatables/jquery.dataTables.min.js?vision=') .$vision }}" ></script>
 <script src="{{asset('plugins/datatables/dataTables.bootstrap4.min.js?vision=') .$vision }}" ></script>
 <script src="{{ asset('js/tinymce.js?vision=') .$vision }}"></script>
+<script src="{{ asset('js/jquery.tag-editor.min.js?vision=') .$vision }}"></script>
 <script>
     function preview(e){
         $(".loader").show();
@@ -682,6 +690,9 @@ $totalAmount = 0;
     }
 
     $(document).ready(function () {
+        $('.tag-editor').tagEditor({
+            removeDuplicates: true
+        });
         $('#debtBalanceTable').DataTable();
         $('.nav-toggle').click(function () {
             var collapse_content_selector = $(this).attr('href');
@@ -743,6 +754,22 @@ $totalAmount = 0;
                 img_keywords: "happy, places"
             }
         });
+        $("input[name='vat_type[]']").change(function() {
+            on_off_invoice();
+        });
     });
+    function on_off_invoice(){
+        $(".vat_type").hide();
+        
+        if($("#original_invoice").prop( "checked" ) == true){
+            $(".original_invoice").show();
+        }
+        if($("#e_invoice").prop( "checked" )  == true){
+            $(".e_invoice").show();
+        }
+        if($("#converted_invoice").prop( "checked" ) == true){
+            $(".converted_invoice").show();
+        }
+    }
 </script>
 @endsection

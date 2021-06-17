@@ -160,9 +160,9 @@ return [
     'template' => 'Template',
 
     //notication
-    'inforequest' => "Dear :name ,\n We would love to send you a request for additional information, see attached file details. \n thanks,",
-    'accepted' => "Dear :name, \n We have sent you a letter informing the result of your claim, please see the details in the attached file. \n thanks",
-    'partiallyaccepted' =>"Dear :name, \n We have sent you a letter informing the result of your claim, please see the details in the attached file. \n thanks",
-    'declined' => "Dear :name, \n We have sent you a letter informing the result of your claim, please see the details in the attached file. \n thanks",
-    'closed' => "Dear :name, \n We have sent you a letter informing the result of your claim, please see the details in the attached file. \n thanks",
+    'inforequest' => "Kính gửi :name, \n Chúng tôi  gửi cho bạn là yêu cầu cung cấp thông tin bổ sung, xem chi tiết ở tệp đính kèm. \n cảm ơn,",
+    'accepted' => "Kính gửi :name, \n Chúng tôi  gửi cho bạn là thư thông báo kết quả bồi thường, xem chi tiết ở tệp đính kèm. \n cảm ơn,",
+    'partiallyaccepted' =>"Kính gửi :name, \n Chúng tôi  gửi cho bạn là thư thông báo kết quả bồi thường, xem chi tiết ở tệp đính kèm. \n cảm ơn,",
+    'declined' => "Kính gửi :name, \n Chúng tôi  gửi cho bạn là thư thông báo kết quả bồi thường, xem chi tiết ở tệp đính kèm. \n cảm ơn,",
+    'closed' => "Kính gửi :name, \n Chúng tôi  gửi cho bạn là thư thông báo kết quả bồi thường, xem chi tiết ở tệp đính kèm. \n cảm ơn,",
 ];

@@ -187,7 +187,7 @@ class ClaimController extends Controller
             $request->session()->flash('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
             return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
         }
-        $id_project_mb = DB::connection('mysql_mantic')->table('mantis_project_table')->where('name','CLM - Mobile')->first()->id;
+        $id_project_mb = DB::connection('mysql_mantis')->table('mantis_project_table')->where('name','like','%Mobile%')->first()->id;
         if($issue->project_id == $id_project_mb){
             $dataNew['project'] = 'mobile';
         }
@@ -351,6 +351,7 @@ class ClaimController extends Controller
         try {
             
             $payment_history_cps = json_decode(AjaxCommonController::getPaymentHistoryCPS($data->code_claim_show)->getContent(),true);
+            $inv_nos = $HBS_CL_CLAIM->InvNo;
             $payment_history = data_get($payment_history_cps,'data_full',[]);
             $approve_amt = data_get($payment_history_cps,'approve_amt');
             $present_amt = data_get($payment_history_cps,'present_amt');
@@ -373,7 +374,16 @@ class ClaimController extends Controller
             $memb_no = "";
             $payment_method = "";
             $balance_cps = collect([]);
+            $inv_nos = null;
         }
+         //show notication mobile
+         $btn_notication = false;
+         $renderMessageInvoice = "";
+         if($data->project == 'mobile') {
+             $btn_notication = true;
+             $renderMessageInvoice = renderMessageInvoice($data->id);
+         }
+         //show btn payment 
         $can_pay_rq = false;
         $count_ap = $export_letter->where('apv_amt',$approve_amt)->where('approve',"!=",null)->count();
         $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Pay Claim')->first()->id;
@@ -390,7 +400,7 @@ class ClaimController extends Controller
         $compact = compact(['data', 'dataImage', 'items', 'admin_list', 'listReasonReject', 
         'listLetterTemplate' , 'list_status_ad', 'user', 'payment_history', 'approve_amt','tranfer_amt','present_amt',
         'payment_method','pocy_no','memb_no', 'member_name', 'balance_cps', 'can_pay_rq',
-        'CsrFile','manager_gop_accept_pay','hospital_request', 'list_diagnosis', 'selected_diagnosis', 'fromEmail','reject_code','IS_FREEZED','adminFee'
+        'CsrFile','manager_gop_accept_pay','hospital_request', 'list_diagnosis', 'selected_diagnosis', 'fromEmail','reject_code','IS_FREEZED','adminFee','inv_nos','btn_notication','renderMessageInvoice'
         ]);
         if ($claim_type == 'P'){
             return view('claimGOPManagement.show', $compact);
@@ -425,7 +435,7 @@ class ClaimController extends Controller
             $body = [
                 'user_email' => $user->email,
                 'issue_id' => $claim->barcode,
-                'text_note' => " Dear Fubon, \n Đính kèm là hồ sơ GOP. \n Thanks,",
+                'text_note' => " Dear Team, \n Đính kèm là hồ sơ GOP. \n Thanks,",
             ];
             $handle = fopen(storage_path("app/public/sortedClaim/{$dataUpdate['url_file_sorted']}"),'r');
             $treamfile = stream_get_contents($handle);
@@ -528,6 +538,15 @@ class ClaimController extends Controller
         $userId = Auth::User()->id;
         $dataUpdate = $request;
         $dataUpdate = $dataUpdate->except(['table2_parameters']);
+        $issue = MANTIS_BUG::where('id',(int)$request->barcode)->first();
+        if($issue == null){
+            $request->session()->flash('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
+            return redirect('/admin/claim/'.$data->id.'/edit')->withInput();
+        }
+        $id_project_mb = DB::connection('mysql_mantis')->table('mantis_project_table')->where('name','like','%Mobile%')->first()->id;
+        if($issue->project_id == $id_project_mb){
+            $dataUpdate['project'] = 'mobile';
+        }
         if ($request->_url_file_sorted) {
             $dataUpdate['url_file_sorted'] = saveFile($request->_url_file_sorted[0], config('constants.sortedClaimUpload'),$claim->url_file_sorted);
         }
@@ -880,16 +899,16 @@ class ClaimController extends Controller
         $claim  = Claim::itemClaimReject()->findOrFail($claim_id);
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
         $namefile = Str::slug("{$export_letter->letter_template->name}_{$HBS_CL_CLAIM->memberNameCap}", '-');
+        $body = [];
+        
         $body = [
             'user_email' => $user->email,
             'issue_id' => $claim->barcode,
-            'text_note' => " Dear CS,  \n Claim gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,",
-
+            'text_note' => " Dear Team,  \n Claim gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,",
         ];
         if($claim->project == 'mobile'){
             $body['text_note'] = "Dear {$HBS_CL_CLAIM->memberNameCap},  \n PCV gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,";
         }
-        
             // gop
             $mpdf = null;
             $match_form_gop = preg_match('/(FORM GOP)/', $export_letter->letter_template->name , $matches);
@@ -918,22 +937,42 @@ class ClaimController extends Controller
                 <div style="text-align: right; font-weight: bold;">
                     <img src="'.asset("images/footer.png").'" alt="foot">
                 </div>');
-                $mpdf->WriteHTML('<div style="position: absolute; top: 9;
-                    right:5"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
+                $mpdf->WriteHTML('<div style="position: absolute; bottom: 3;
+                    right:1"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
                     <div style="text-align: center">'.$claim->barcode.'</div></div>');
                 $mpdf->WriteHTML(data_get($export_letter->approve, 'data'));
     
             }else{
-                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
-                
-                $mpdf->WriteHTML(data_get($export_letter->approve, 'data'));
+                if($export_letter->approve != null){
+                    
+                    $data['content'] = $export_letter->approve['data'];
+                }elseif($export_letter->wait != null){
+                   
+                    $data['content'] = $export_letter->wait['data'];
+                }else{
+                    $data = $this->letter($export_letter->letter_template->id , $claim_id, $id);
+                }
+                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 34, 'margin_bottom' => 30]);
+                $mpdf->WriteHTML('
+                <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
+                    <img src="'.asset("images/header.jpg").'" alt="head">
+                </div>');
+                $mpdf->WriteHTML('<div style="position: absolute; bottom: 3;
+                    right:1"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
+                    <div style="text-align: center">'.$claim->barcode.'</div></div>');
+                $mpdf->SetHTMLFooter('
+                <div style="text-align: right; font-weight: bold;">
+                    <img src="'.asset("images/footer.png").'" alt="foot">
+                </div>');
+                $mpdf->WriteHTML($data['content']);
             }
             
-
+            $file_contents = base64_encode($mpdf->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN));
+            
             $body['files'] = [
                 [
                     'name' => $namefile.".pdf",
-                    "content" => base64_encode($mpdf->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN))
+                    "content" => $file_contents
                 ]
                 ];
         
@@ -947,7 +986,7 @@ class ClaimController extends Controller
             }
         }
         
-        if($export_letter->letter_template->name == 'Thư thông báo bồi thường'){
+        if(preg_match('/(Thư thông báo bồi thường)/', $export_letter->letter_template->name , $matchess)){
             
             $diff = $HBS_CL_CLAIM->SumPresAmt - $HBS_CL_CLAIM->SumAppAmt ;
             
@@ -966,13 +1005,36 @@ class ClaimController extends Controller
                 'content' => $export_letter->approve['data_payment']
             ];
         }
-        $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
-        $res = json_decode($res->getBody(),true);
         
         
         try {
+            
             $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
             $res = json_decode($res->getBody(),true);
+            if($claim->project == 'mobile'){
+
+                $lang  = $HBS_CL_CLAIM->member->scma_oid_country_corr_addr == 'COUNTRY_084' ?'vi':'en';
+                if(in_array(data_get($body,'status_id','99'),array_values(config('constants.status_mantic_value')))){
+                    $k_mss = data_get(config('constants.status_mantic'),$body['status_id'],'inforequest');
+                    $tran_place = [
+                        'name' => $HBS_CL_CLAIM->memberNameCap,
+                    ];
+                    $dicription = trans("message.$k_mss",$tran_place,$lang);
+                    $response = send_message_mobile('Pacific Cross VietNam',$dicription,$claim,$file_contents);
+                    if($response->code == 0){
+                        $request->session()->flash(
+                            'status', 
+                           'Đã gửi thông báo Mobile app thành công'
+                        );
+                    }else{
+                        $request->session()->flash(
+                            'errorStatus', 
+                            'Gửi thông báo Mobile app thất bại --->' . $response->message
+                        );
+                    }
+                }
+            }
+            
         } catch (Exception $e) {
 
             $request->session()->flash(
@@ -1005,42 +1067,7 @@ class ClaimController extends Controller
         }
         return redirect('/admin/claim/'.$claim_id)->with('status', __('message.update_claim'));
     }
-
-     // change Etalk 
-    public function changeStatusEtalk(sendEtalkRequest $request){
-        $claim_id = $request->claim_id;
-        $user = Auth::User();
-        $claim  = Claim::itemClaimReject()->findOrFail($claim_id);
-        $barcode = $claim->barcode;
-        $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
-        $body = [
-            'user_email' => $user->email,
-            'issue_id' => $barcode,
-            'text_note' => 'Cập nhật lại status',
-
-        ];
-        $diff = $HBS_CL_CLAIM->SumPresAmt - $HBS_CL_CLAIM->SumAppAmt ;
-        if($HBS_CL_CLAIM->SumAppAmt == 0 ){
-                $body['status_id'] = config('constants.status_mantic_value.declined');
-        }elseif($diff == 0){
-                $body['status_id'] = config('constants.status_mantic_value.accepted');
-        }else {
-                $body['status_id'] = config('constants.status_mantic_value.partiallyaccepted');
-        }
-        
-        try {
-            $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
-            $res = json_decode($res->getBody(),true);
-        } catch (Exception $e) {
-
-            $request->session()->flash(
-                'errorStatus', 
-                generateLogMsg($e)
-            );
-            return redirect('/admin/claim/'.$claim_id)->withInput();
-        }
-        return redirect('/admin/claim/'.$claim_id)->with('status', __('message.update_claim'));
-    }
+    
     // confirm contract
     public function confirmContract(Request $request){
         $claim_id = $request->claim_id;
@@ -1228,8 +1255,8 @@ class ClaimController extends Controller
                 <div style="text-align: right; font-weight: bold;">
                     <img src="'.asset("images/footer.png").'" alt="foot">
                 </div>');
-                $mpdf->WriteHTML('<div style="position: absolute; top: 9;
-                    right:5"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
+                $mpdf->WriteHTML('<div style="position: absolute; bottom: 3;
+                    right:1"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
                     <div style="text-align: center">'.$claim->barcode.'</div></div>');
                 $mpdf->WriteHTML($data['content']);
     
@@ -1428,11 +1455,11 @@ class ClaimController extends Controller
         $content = str_replace('[[$diffIncur_extb]]', $diffIncur_extb , $content);
         $content = str_replace('[[$CSR_REMASK_ALL_LINE]]', $CSR_REMASK_ALL_LINE , $content);
         $content = str_replace('[[$RBGOP]]', formatPrice($RBGOP), $content);
-        $content = str_replace('[[$SURGOP]]', formatPrice($SURGOP), $content);
-        $content = str_replace('[[$EXTBGOP]]', formatPrice($EXTBGOP), $content);
-        $content = str_replace('[[$ICUGOP]]', formatPrice($ICUGOP), $content);
-        $content = str_replace('[[$OTHERGOP]]', formatPrice($OTHERGOP), $content);
-        $content = str_replace('[[$ProApvAmt]]', formatPrice($ProApvAmt), $content);
+        $content = str_replace('[[$SURGOP]]', formatPrice(round($SURGOP)), $content);
+        $content = str_replace('[[$EXTBGOP]]', formatPrice(round($EXTBGOP)), $content);
+        $content = str_replace('[[$ICUGOP]]', formatPrice(round($ICUGOP)), $content);
+        $content = str_replace('[[$OTHERGOP]]', formatPrice(round($OTHERGOP)), $content);
+        $content = str_replace('[[$ProApvAmt]]', formatPrice(round($ProApvAmt)), $content);
         $content = str_replace('[[$itemsReject]]', implode(",",$itemsReject), $content);
         $content = str_replace('[[$typeGOP]]', $typeGOP, $content);
         $content = str_replace('[[$noteGOP]]', $noteGOP, $content);
@@ -2016,11 +2043,44 @@ class ClaimController extends Controller
 
     public function sendPayment(Request $request, $id){
         $claim = Claim::findOrFail($id);
+        if($claim->original_invoice_no == null &&  $claim->e_invoice_no == null && $claim->converted_invoice_no == null ){
+            return redirect('/admin/claim/'.$id)->with('errorStatus', 'Vui Lòng Nhập Thêm số Hóa Đơn Trên ClaimAsstant'); 
+        }
+        if($claim->original_invoice_no != null &&  $claim->original_invoice_type != "Yes"){
+            return redirect('/admin/claim/'.$id)->with('errorStatus', 'Hóa Đơn góc Chưa Đầy Đủ'); 
+        }
+        if($claim->e_invoice_no != null &&  $claim->e_invoice_type != "Yes"){
+            return redirect('/admin/claim/'.$id)->with('errorStatus', 'Hóa Đơn Điện tử Chưa hợp lệ'); 
+        }
+        if($claim->converted_invoice_no != null &&  $claim->converted_invoice_type != "Yes"){
+            return redirect('/admin/claim/'.$id)->with('errorStatus', 'Hóa Chuyển đổi tử Chưa hợp lệ'); 
+        }
         $HBS_CL_CLAIM = HBS_CL_CLAIM::HBSData()->findOrFail($claim->code_claim);
-        $count_policy =  $HBS_CL_CLAIM->HBS_CL_LINE->pluck("MR_POLICY_PLAN.MR_POLICY.pocy_ref_no")->unique()->count();
-        if($count_policy != 1){
-            $request->session()->flash('errorStatus', 'Claim chỉ được phép tồn tại 1 policy plan ');
-            return redirect('/admin/claim/'.$id)->withInput();
+        $HBS_CL_LINE = $HBS_CL_CLAIM->HBS_CL_LINE->first();
+        if($HBS_CL_LINE->scma_oid_cl_payment_method == null){
+            return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có phương thức thanh toán , Vui lòng (Ament -> Update) lại HBS , và thử lại sau'); 
+        }
+        switch ($HBS_CL_CLAIM->payMethod) {
+            case 'CL_PAYMENT_METHOD_TT':
+                if($HBS_CL_LINE->bank_name == null || $HBS_CL_LINE->acct_name == null || $HBS_CL_LINE->acct_no == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin chuyển khoản vui lòng , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                break;
+            case 'CL_PAYMENT_METHOD_CH':
+                if($HBS_CL_LINE->bank_name == null || $HBS_CL_LINE->bank_branch == null || $HBS_CL_LINE->bank_city == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin Ngân Hàng nhận , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                if($HBS_CL_LINE->beneficiary_name == null || $HBS_CL_LINE->id_passport_date_of_issue == null || $HBS_CL_LINE->id_passport_no == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin ID Card Của Người Nhận , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                break;
+            case 'CL_PAYMENT_METHOD_CQ':
+                if($HBS_CL_LINE->beneficiary_name == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin Người Nhận , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                break;
+            default:
+                break;
         }
         $rp = AjaxCommonController::sendPayment($request,$id);
         switch (data_get($rp,'code')) {
@@ -2241,7 +2301,7 @@ class ClaimController extends Controller
             $body = [
                 'user_email' => $user->email,
                 'issue_id' => $claim->barcode,
-                'text_note' => " Dear Fubon, \n PCV gửi là thông tin thanh toán và chi tiết theo như file đính kèm. \n Thanks,",
+                'text_note' => " Dear Team, \n PCV gửi là thông tin thanh toán và chi tiết theo như file đính kèm. \n Thanks,",
     
             ];
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
@@ -2403,8 +2463,8 @@ class ClaimController extends Controller
             <div style="text-align: right; font-weight: bold;">
                 <img src="'.asset("images/footer.png").'" alt="foot">
             </div>');
-            $mpdf->WriteHTML('<div style="position: absolute; top: 9;
-                right:5"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
+            $mpdf->WriteHTML('<div style="position: absolute; bottom:3;
+                right:1"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
                 <div style="text-align: center">'.$claim->barcode.'</div></div>');
             $mpdf->WriteHTML(str_replace("[[$per_approve_sign_replace]]",$per_approve_sign_replace,data_get($export_letter->approve, 'data')));
 
@@ -2643,5 +2703,39 @@ class ClaimController extends Controller
                 ]
         ); 
         
+    }
+
+    public function update_invoice(Request $request,$id){
+        $claim = Claim::findOrFail($id);
+        $request->validate([
+            'vat_type' => 'required',
+        ]);
+        $claim->original_invoice_type = $request->original_invoice_type == "Yes" ? "Yes" : "No";
+        $claim->e_invoice_type = $request->e_invoice_type == "Yes"? "Yes" : "No";
+        $claim->converted_invoice_type = $request->converted_invoice_type == "Yes"? "Yes" : "No";
+        
+        $claim->original_invoice_no = $request->original_invoice_no;
+        $claim->e_invoice_no = $request->e_invoice_no;
+        $claim->converted_invoice_no = $request->converted_invoice_no;
+        $claim->original_invoice_no_not_ready = $request->original_invoice_no_not_ready;
+        $claim->e_invoice_no_not_ready = $request->e_invoice_no_not_ready;
+        $claim->converted_invoice_no_not_ready = $request->converted_invoice_no_not_ready;
+        //remove type not check
+        $not_check = array_diff(array_keys(config('constants.invoice_type')),$request->vat_type);
+        foreach ($not_check as $key => $value) {
+            $field =  $value.'_no';
+            $claim->$field = null;
+        }
+        $claim->save();
+        
+        return redirect('/admin/claim/'.$id)->with('status', 'Đã Update Claim thành công');
+        
+    }
+
+    public function sendNoticationMobile(Request $request, $id){
+        $claim = Claim::findOrFail($id);
+        send_message_mobile('Pacific Cross Viet Nam', $request->message, $claim);
+
+        return redirect('/admin/claim/'.$id)->with('status', 'Đã Notication thành công');
     }
 }
