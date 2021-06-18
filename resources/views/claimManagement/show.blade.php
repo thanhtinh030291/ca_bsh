@@ -468,6 +468,8 @@ $totalAmount = 0;
 {{-- deletePagesModal--}}
 @include('claimManagement.deletePagesModal')
 
+{{-- invoiceNoticationModal--}}
+@include('claimManagement.invoiceNoticationModal')
 @endsection
 
 
