@@ -2675,34 +2675,39 @@ class ClaimController extends Controller
         $mantis_id = $HBS_CL_CLAIM->barcode;
 
         $custom_field = \App\MANTIS_CUSTOM_FIELD::whereIn('name',['VIP', 'Amount Submitted', 'Currency'])->pluck('id','name');
- 
-        \App\MANTIS_CUSTOM_FIELD_STRING::updateOrCreate(
-                ['field_id' => data_get($custom_field,'Currency'), 'bug_id' => $mantis_id],
-                [   
-                    'field_id' => data_get($custom_field,'Currency'),
-                    'bug_id' => $mantis_id,
-                    'value' => $currency
-                ]
-            );
-            
-        \App\MANTIS_CUSTOM_FIELD_STRING::updateOrCreate(
-                ['field_id' => data_get($custom_field,'Amount Submitted'), 'bug_id' => $mantis_id],
-                [
-                    'field_id' => data_get($custom_field,'Amount Submitted'),
-                    'bug_id' => $mantis_id,
-                    'value' => $org_amount_submit
-                ]
-            );
         
-        \App\MANTIS_CUSTOM_FIELD_STRING::updateOrCreate(
-                ['field_id' => data_get($custom_field,'VIP'), 'bug_id' => $mantis_id],
-                [
-                    'field_id' => data_get($custom_field,'VIP'),
-                    'bug_id' => $mantis_id,
-                    'value' => $vip
-                ]
-        ); 
-        
+        $mantis_currency = \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'Currency'))
+                            ->where('bug_id',$mantis_id)->first();
+        if($mantis_currency == null){
+            \App\MANTIS_CUSTOM_FIELD_STRING::create(['field_id' => data_get($custom_field,'Currency'),
+            'bug_id' => $mantis_id,
+            'value' => $currency]);
+        }else{
+            $mantis_currency->value = $currency;
+            $mantis_currency->save();
+        }
+
+        $mantis_amount_submit = \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'Amount Submitted'))
+                            ->where('bug_id',$mantis_id)->first();
+        if($mantis_amount_submit == null){
+            \App\MANTIS_CUSTOM_FIELD_STRING::create(['field_id' => data_get($custom_field,'Amount Submitted'),
+            'bug_id' => $mantis_id,
+            'value' => $org_amount_submit]);
+        }else{
+            $mantis_amount_submit->value = $org_amount_submit;
+            $mantis_amount_submit->save();
+        }
+
+        $mantis_vip = \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'VIP'))
+                            ->where('bug_id',$mantis_id)->first();
+        if($mantis_vip == null){
+            \App\MANTIS_CUSTOM_FIELD_STRING::create(['field_id' => data_get($custom_field,'VIP'),
+            'bug_id' => $mantis_id,
+            'value' => $vip]);
+        }else{
+            $mantis_vip->value = $vip;
+            $mantis_vip->save();
+        }
     }
 
     public function update_invoice(Request $request,$id){
