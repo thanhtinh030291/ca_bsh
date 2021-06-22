@@ -188,9 +188,7 @@ class ClaimController extends Controller
             return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
         }
         $id_project_mb = DB::connection('mysql_mantis')->table('mantis_project_table')->where('name','like','%Mobile%')->first()->id;
-        if($issue->project_id == $id_project_mb){
-            $dataNew['project'] = 'mobile';
-        }
+        
         
         //end valid
         if ($request->_url_file_sorted) {
@@ -198,7 +196,9 @@ class ClaimController extends Controller
         }
         $file = $request->file;
         $dataNew = $request->except(['file','file2','table2_parameters', 'table1_parameters']);
-        
+        if($issue->project_id == $id_project_mb){
+            $dataNew['project'] = 'mobile';
+        }
         $user = Auth::User();
         $userId = $user->id;
         $dirUpload = Config::get('constants.formClaimUpload');
@@ -1005,7 +1005,6 @@ class ClaimController extends Controller
                 'content' => $export_letter->approve['data_payment']
             ];
         }
-        
         
         try {
             
