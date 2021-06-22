@@ -1012,7 +1012,8 @@ class ClaimController extends Controller
             $res = json_decode($res->getBody(),true);
             if($claim->project == 'mobile'){
 
-                $lang  = $HBS_CL_CLAIM->member->scma_oid_country_corr_addr == 'COUNTRY_084' ?'vi':'en';
+                //$lang  = $HBS_CL_CLAIM->member->scma_oid_country_corr_addr == 'COUNTRY_084' ?'vi':'en';
+                $lang = 'vi';
                 if(in_array(data_get($body,'status_id','99'),array_values(config('constants.status_mantic_value')))){
                     $k_mss = data_get(config('constants.status_mantic'),$body['status_id'],'inforequest');
                     $tran_place = [
