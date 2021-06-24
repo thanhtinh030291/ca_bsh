@@ -280,6 +280,37 @@ $max = config('constants.minMaxLength.max');
                     </div>
                     <!-- end row -->	
                 </div>
+                <div class="content">
+                    <div class="container-fluid">	     
+                    <!-- begin col -->	  
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">						
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h3><i class="fa fa-user"></i> Get All message Email </h3>								
+                                    </div>
+                                        
+                                    <div class="card-body">
+                                        
+                                    {{ Form::open(array('url' => "admin/setting/getMessageMail", 'method' => 'post' ,'files' => true, 'id' => 'drawing-form')) }}
+                        
+                                        <div class="row">
+                                            <div class="col-lg-9 col-xl-9">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>							
+                                    </form>										
+                                </div>
+                            </div>
+                        </div>
+                    <!-- end col -->	                                  
+                    </div>
+                    <!-- end row -->	
+                </div>
             </div>
         </div>
     </div>

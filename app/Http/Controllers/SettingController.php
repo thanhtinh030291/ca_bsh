@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\HbsBenhead;
 use DB;
+use Webklex\IMAP\Client;
 
 
 class SettingController extends Controller
@@ -115,6 +116,41 @@ class SettingController extends Controller
         }
         $request->session()->flash('status', "setting update success"); 
         return redirect('/admin/setting');
+    }
+
+
+    public function getMessageMail(Request $request){
+        $client = \Webklex\IMAP\Facades\Client::account('default');
+
+        //Connect to the IMAP Server
+        $client->connect();
+
+        //Get all Mailboxes
+        /** @var \Webklex\PHPIMAP\Support\FolderCollection $folders */
+        $folders = $client->getFolders();
+        //dd($folders);
+        //Loop through every Mailbox
+        /** @var \Webklex\PHPIMAP\Folder $folder */
+        foreach($folders as $folder){
+
+            //Get all Messages of the current Mailbox $folder
+            /** @var \Webklex\PHPIMAP\Support\MessageCollection $messages */
+            $messages = $folder->messages()->all()->get();
+            dd($messages);
+            /** @var \Webklex\PHPIMAP\Message $message */
+            foreach($messages as $message){
+                echo $message->getSubject().'<br />';
+                echo 'Attachments: '.$message->getAttachments()->count().'<br />';
+                echo $message->getHTMLBody();
+                
+                //Move the current Message to 'INBOX.read'
+                if($message->move('INBOX.read') == true){
+                    echo 'Message has ben moved';
+                }else{
+                    echo 'Message could not be moved';
+                }
+            }
+        }
     }
 
 }

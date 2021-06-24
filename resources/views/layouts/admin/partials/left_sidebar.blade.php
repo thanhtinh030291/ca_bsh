@@ -60,6 +60,17 @@
                 </li>
                 <li class="submenu">
                     <a href="#">
+                        <i class="fa fa-envelope-square" aria-hidden="true"></i> <span> EMail Management </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        <li class="{{ setActive('admin/mailbox') }}"> 
+                            <a class="{{ setActive('admin/mailbox') }}"
+                            href="{{ url('admin/mailbox') }}"><span>Index</span></a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="submenu">
+                    <a href="#">
                         <i class="fa fa-credit-card-alt" aria-hidden="true"></i> <span> Payment Management </span>
                     </a>
                     <ul class="list-unstyled">

@@ -134,6 +134,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('setting/checkUpdateClaim','SettingController@checkUpdateClaim')->middleware(['role:Admin']);
         Route::post('setting/checkUpdateLogApproved','SettingController@checkUpdateLogApproved')->middleware(['role:Admin']);
         Route::post('setting/updateBenhead','SettingController@updateBenhead')->middleware(['role:Admin']);
+        Route::post('setting/getMessageMail','SettingController@getMessageMail')->middleware(['role:Admin']);
+        
         Route::resource('uncSign', 'UncSignController');
 
         //payment Histor
@@ -151,6 +153,12 @@ Route::group(['prefix' => 'admin'], function () {
 
         //report for admin claim
         Route::resource('reportGop', 'ReportGopController');
+
+        //Mail box
+        Route::resource('mailbox', 'MailBoxController');
+        Route::get('mailbox/{id_mess}/download/{id}','MailBoxController@download');
+        Route::get('mailbox-error-messages','MailBoxController@error_messages');
+        
         
     });
 

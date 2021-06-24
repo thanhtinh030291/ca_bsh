@@ -54,27 +54,17 @@ return[
     'pass_mfile' => '123456',
     'mode_mfile' => 'bsh',
 
-    // 'token_mantic' => '28Frxz5e2VOvbVJiFxEOkxs0bDrGxwmH',
-    // 'url_mantic' => 'https://bsh-etalk.pacificcross.com.vn/',
-    // 'url_mantic_api' => 'https://bsh-etalk.pacificcross.com.vn/',
-    // 'url_cps' => 'https://cpsbsh.pacificcross.com.vn/index.php/',
-    // 'api_cps' => 'https://cpsbsh.pacificcross.com.vn/index.php/api/',
-    // 'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
-    // 'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
-    // 'url_hbs' => 'http://192.168.0.221:8030/',
-    //'url_mobile_api'  => 'http://127.0.0.1:8000/api/',
     
-    //test
-    'token_mantic' => 'tXC0m7sn3gRqUeLGN-O8fWAOXoi0_Xgl',
-    'url_mantic' => 'https://bsh-etalk-uat.pacificcross.com.vn/',
-    'url_mantic_api' => 'https://bsh-etalk-uat.pacificcross.com.vn/',
-    'url_cps' => 'https://cpsbsh-uat.pacificcross.com.vn/index.php/',
-    'api_cps' => 'https://cpsbsh-uat.pacificcross.com.vn/index.php/api/',
-    'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
-    'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
-    'url_hbs' => 'http://192.168.0.221:8030/',
-    'url_mobile_api'  => 'https://mobile-claim-uat.pacificcross.com.vn/api/',
-    //end test
+    'token_mantic' => env("token_mantic",""),
+    'url_mantic' => env("url_mantic",""),
+    'url_mantic_api' => env("url_mantic_api",""),
+    'url_cps' => env("url_cps",""),
+    'api_cps' => env("api_cps",""),
+    'client_id' => env("client_id",""),
+    'client_secret' => env("client_secret",""),
+    'url_hbs' => env("url_hbs",""),
+    'url_mobile_api'  => env("url_mobile_api",""),
+
     'grant_type' => 'client_credentials',
     'url_query_online' => 'https://pcvwebservice.pacificcross.com.vn/bluecross/query_rest.php?id=',
     'claim_result' => [

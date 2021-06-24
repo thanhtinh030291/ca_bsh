@@ -647,7 +647,7 @@ class ClaimController extends Controller
         //validate
             $now = Carbon::now()->toDateTimeString();
             $HBS_CL_CLAIM = HBS_CL_CLAIM::findOrFail($claim->code_claim);
-            $issue = MANTIS_BUG::where('id',(int)$HBS_CL_CLAIM->barcode)->first();
+            $issue = MANTIS_BUG::where('id',$claim->barcode)->first();
             if($issue == null){
                 return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
             }
@@ -2437,6 +2437,9 @@ class ClaimController extends Controller
 
         
         if($match_form_gop){
+            if(data_get($claim->hospital_request , 'url_form_request') == null){
+                return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Vui lòng upload Files Claim Form khu vực input');
+            }
             $template = 'templateEmail.sendProviderTemplate_input';
             $subject = 'Thư bảo lãnh đầu vào KH: '.$HBS_CL_CLAIM->MemberNameCap;
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 35]);
@@ -2489,7 +2492,7 @@ class ClaimController extends Controller
             
             $old_msg = $claim->inbox_email->body;
             preg_match('/(RE:)/',  $claim->inbox_email->subject, $matches_re, PREG_OFFSET_CAPTURE);
-            $subject = $matches_re ? $claim->inbox_email->subject : "RE: " . $claim->inbox_email->subject;
+            $subject = $matches_re ? $claim->inbox_email->subject : "RE: " . $claim->inbox_email->subject ."-".$HBS_CL_CLAIM->MemberNameCap;
             $old_msg  = str_replace("\r\n", "<br>", utf8_decode($old_msg));
         }
         $user = Auth::User();
@@ -2510,6 +2513,7 @@ class ClaimController extends Controller
         $data['email_reply'] = $user->email;
         $email_to = explode(",", $request->email_to);
         $email_to = array_diff( $email_to, ['admin@pacificcross.com.vn'] );
+        
         sendEmailProvider($user, $email_to, 'provider', $subject, $data,$template);
         return redirect('/admin/claim/'.$claim_id)->with('status', 'Đã gửi thư cho provider thành công');
     }

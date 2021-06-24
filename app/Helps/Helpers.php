@@ -166,11 +166,11 @@ function sendEmailProvider($user_send, $to_email , $to_name, $subject, $data , $
             'data' => isset($data) ?  $data : []
         ], function ($mail) use ($user_send, $to_email, $to_name, $subject, $app_name, $app_email, $data) {
             $mail
-                ->to( $to_email)
-                ->cc([$user_send->email])
+                ->to( $to_email )
+                ->cc([$user_send->email, $app_email])
                 ->replyTo($user_send->email, $user_send->name)
                 ->attachData(base64_decode($data['attachment']['base64']), $data['attachment']['filename'], ['mime' => $data['attachment']['filetype']])
-                ->subject($subject);
+                ->subject($subject ."- #".config('constants.company')."#");
         }
     );
     return true;
