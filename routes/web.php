@@ -159,7 +159,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('mailbox/{id_mess}/download/{id}','MailBoxController@download');
         Route::get('mailbox-error-messages','MailBoxController@error_messages');
         
-        
+        // pocy 
+        Route::resource('pocy', 'PocyManagementController');
     });
 
 });

@@ -647,10 +647,27 @@ class ClaimController extends Controller
         //validate
             $now = Carbon::now()->toDateTimeString();
             $HBS_CL_CLAIM = HBS_CL_CLAIM::findOrFail($claim->code_claim);
+            if($claim_type == "P"){
+                $prov_oid = $HBS_CL_CLAIM->FirstLine->prov_oid;
+                $pocy_ref_no = $HBS_CL_CLAIM->police->pocy_ref_no;
+
+                if($pocy_ref_no){
+                    $PocyManagement = \App\PocyManagement::where('pocy_ref_no',$pocy_ref_no)->first();
+                    if($PocyManagement != null){
+                        $list_p = explode(",",$PocyManagement->providers);
+                        if(in_array($prov_oid, $list_p)){
+                            return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'PROVIDER này không được GOP , vui lòng liên hệ Manager GOP .');
+                        }
+                    }
+                }
+            }
+            
+            
             $issue = MANTIS_BUG::where('id',$claim->barcode)->first();
             if($issue == null){
                 return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
             }
+            
             // $count_provider_not = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('prov_oid',config('constants.not_provider'))->count();
             // if($count_provider_not > 0){
             //     return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Tồn tại provider: "BUMRUNGRAD INTERNATIONAL HOSPITAL" vui lòng cập nhật lại HBS ');

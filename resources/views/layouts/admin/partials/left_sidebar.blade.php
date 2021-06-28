@@ -55,6 +55,10 @@
                             <a class="{{ setActive('admin/letter_template') }}"
                             href="{{ url('admin/letter_template') }}"><span> {{ __('message.letter_template')}}</span></a>
                         </li>
+                        <li class="{{ setActive('admin/pocy') }}"> 
+                            <a class="{{ setActive('admin/pocy') }}"
+                            href="{{ url('admin/pocy') }}"><span> Policy Management</span></a>
+                        </li>
                         @endhasanyrole
                     </ul>
                 </li>
