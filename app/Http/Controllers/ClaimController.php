@@ -748,7 +748,32 @@ class ClaimController extends Controller
             }
             if($status_change[1] == 'approved'){ //nofice && update mantis customfield
 
-                $this->update_custom_field_mantis($HBS_CL_CLAIM);
+                $vip = $HBS_CL_CLAIM->member->mbr_vip == "YN_Y" ? 'Yes' : 'No';
+                $SumPresAmt =  $HBS_CL_CLAIM->SumPresAmt ;
+                $SumOrgPresAmt =  $HBS_CL_CLAIM->SumOrgPresAmt ;
+                $currency =  $SumPresAmt == $SumOrgPresAmt ? 'VND' : 'USD';
+                $SumAppAmt = $HBS_CL_CLAIM->SumAppAmt;
+                $mantis_id = $HBS_CL_CLAIM->barcode;
+                $body = [
+                    "email" =>  $user_create->email,
+                    "vip" =>  $vip,
+                    "currency" => $currency,
+                    "pres_amt" => $SumPresAmt,
+                    "app_amt" => $SumAppAmt
+                ];
+
+            
+                try {
+                    $res = PostApiMantic("/api/rest/claim/update/{$mantis_id}", $body);
+                    $res = json_decode($res->getBody(),true);
+                } catch (Exception $e) {
+
+                    $request->session()->flash(
+                        'errorStatus', 
+                        generateLogMsg($e)
+                    );
+                    return redirect('/admin/claim/'.$id)->withInput();
+                }
                 // if($user->hasRole('Claim')){
                 //     $leader = $user->Leader;
                 //     if($leader != null){
@@ -2688,52 +2713,7 @@ class ClaimController extends Controller
         return $html;
     }
 
-    public function update_custom_field_mantis($HBS_CL_CLAIM){
-        $vip = $HBS_CL_CLAIM->member->mbr_vip == "YN_Y" ? 'Yes' : 'No';
-        $amount_submit =  $HBS_CL_CLAIM->SumPresAmt ;
-        $org_amount_submit =  $HBS_CL_CLAIM->SumOrgPresAmt ;
-        $currency =  $amount_submit == $org_amount_submit ? 'VND' : 'USD';
-        $mantis_id = $HBS_CL_CLAIM->barcode;
-
-        $custom_field = \App\MANTIS_CUSTOM_FIELD::whereIn('name',['VIP', 'Amount Submitted', 'Currency'])->pluck('id','name');
-        
-        $mantis_currency = \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'Currency'))
-                            ->where('bug_id',$mantis_id)->first();
-        if($mantis_currency == null){
-            \App\MANTIS_CUSTOM_FIELD_STRING::create(['field_id' => data_get($custom_field,'Currency'),
-            'bug_id' => $mantis_id,
-            'value' => $currency]);
-        }else{
-            \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'Currency'))
-                            ->where('bug_id',$mantis_id)->update([
-                                'value' => $currency
-                            ]);
-        }
-
-        $mantis_amount_submit = \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'Amount Submitted'))
-                            ->where('bug_id',$mantis_id)->first();
-        if($mantis_amount_submit == null){
-            \App\MANTIS_CUSTOM_FIELD_STRING::create(['field_id' => data_get($custom_field,'Amount Submitted'),
-            'bug_id' => $mantis_id,
-            'value' => $org_amount_submit]);
-        }else{
-            \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'Amount Submitted'))
-            ->where('bug_id',$mantis_id)->update(['value' => $org_amount_submit]);
-        }
-
-        $mantis_vip = \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'VIP'))
-                            ->where('bug_id',$mantis_id)->first();
-
-        if($mantis_vip == null){
-            \App\MANTIS_CUSTOM_FIELD_STRING::create(['field_id' => data_get($custom_field,'VIP'),
-            'bug_id' => $mantis_id,
-            'value' => $vip]);
-        }else{
-            \App\MANTIS_CUSTOM_FIELD_STRING::where('field_id', data_get($custom_field,'VIP'))
-                            ->where('bug_id',$mantis_id)->update(['value' => $vip]);
-        }
-       
-    }
+    
 
     public function update_invoice(Request $request,$id){
         $claim = Claim::findOrFail($id);
