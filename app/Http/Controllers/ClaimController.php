@@ -753,7 +753,7 @@ class ClaimController extends Controller
                 $SumOrgPresAmt =  $HBS_CL_CLAIM->SumOrgPresAmt ;
                 $currency =  $SumPresAmt == $SumOrgPresAmt ? 'VND' : 'USD';
                 $SumAppAmt = $HBS_CL_CLAIM->SumAppAmt;
-                $mantis_id = $HBS_CL_CLAIM->barcode;
+                $mantis_id = (int)$HBS_CL_CLAIM->barcode;
                 $body = [
                     "email" =>  $user_create->email,
                     "vip" =>  $vip,
