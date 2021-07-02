@@ -772,7 +772,7 @@ class ClaimController extends Controller
                         'errorStatus', 
                         generateLogMsg($e)
                     );
-                    return redirect('/admin/claim/'.$id)->withInput();
+                    return redirect('/admin/claim/'.$claim_id)->withInput();
                 }
                 // if($user->hasRole('Claim')){
                 //     $leader = $user->Leader;
