@@ -103,7 +103,7 @@ function truncate($string , $limit = 100){
     return Str::limit($string, $limit);
 }
 
-function PostApiMantic($url,$body) {
+function PostApiMantic($url,$body,$method = 'POST') {
     $headers = [
         'Content-Type' => 'application/json',
         'Authorization' => config('constants.token_mantic'),
@@ -111,7 +111,7 @@ function PostApiMantic($url,$body) {
     $client = new \GuzzleHttp\Client([
             'headers' => $headers
         ]);
-    $response = $client->request("POST", config('constants.url_mantic_api').$url , ['form_params'=>$body]);
+    $response = $client->request($method, config('constants.url_mantic_api').$url , ['form_params'=>$body]);
 
     return $response;
 }

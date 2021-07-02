@@ -764,7 +764,7 @@ class ClaimController extends Controller
 
             
                 try {
-                    $res = PostApiMantic("/api/rest/claim/update/{$mantis_id}", $body);
+                    $res = PostApiMantic("/api/rest/claim/update/{$mantis_id}", $body,"PATCH");
                     $res = json_decode($res->getBody(),true);
                 } catch (Exception $e) {
 
