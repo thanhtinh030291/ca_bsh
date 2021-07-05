@@ -788,7 +788,7 @@ class ClaimController extends Controller
                 if($user->hasRole('Claim Independent')){
                     $status_change[0] = 10; //QC approved
                 }
-                if(  $user->hasRole('Claim Independent') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 5000000){
+                if(  $user->hasRole('Claim Independent') ){
                     $to_user = [$user_create->manager];
                 }
                 
@@ -798,7 +798,7 @@ class ClaimController extends Controller
 
                 
                 // Claim GOP
-                if($user->hasRole('ClaimGOP') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 5000000){
+                if($user->hasRole('ClaimGOP') ){
                     $to_user = Setting::findOrFail(1)->manager_gop_claim;
                 }
                 if( $user->hasRole('ManagerGOP') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 20000000){
