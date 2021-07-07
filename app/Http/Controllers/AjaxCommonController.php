@@ -303,7 +303,8 @@ class AjaxCommonController extends Controller
         $client = new \GuzzleHttp\Client([
             'headers' => $headers
         ]);
-        $response = $client->request("POST", config('constants.api_cps').'send_payment/'. $request->cl_no , ['form_params'=>$body]);dd($response->getBody()->getContents());
+        $response = $client->request("POST", config('constants.api_cps').'send_payment/'. $request->cl_no , ['form_params'=>$body]);
+        
         $response =  json_decode($response->getBody()->getContents());
         $rs=data_get($response,'code');
         if(data_get($response,'code') == "00" && data_get($response,'data') != null){
