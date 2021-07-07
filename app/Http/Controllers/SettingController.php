@@ -103,7 +103,7 @@ class SettingController extends Controller
     }
 
     public function updateBenhead(Request $request){
-        $HBS_PD_BEN_HEAD = HBS_PD_BEN_HEAD::whereNotNull('BEN_HEAD')->whereIn('scma_oid_ben_type',['BENEFIT_TYPE_IP','BENEFIT_TYPE_OP','BENEFIT_TYPE_BA'])->with('PD_BEN_HEAD_LANG')->get();
+        $HBS_PD_BEN_HEAD = HBS_PD_BEN_HEAD::whereNotNull('BEN_HEAD')->whereIn('scma_oid_ben_type',['BENEFIT_TYPE_LF','BENEFIT_TYPE_IP','BENEFIT_TYPE_OP','BENEFIT_TYPE_BA'])->with('PD_BEN_HEAD_LANG')->get();
         foreach ($HBS_PD_BEN_HEAD as $key => $value) {
             $HbsBenhead = HbsBenhead::updateOrCreate([
                 'code'   => $value->ben_head,
