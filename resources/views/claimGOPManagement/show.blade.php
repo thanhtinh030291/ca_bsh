@@ -256,7 +256,13 @@ $totalAmount = 0;
                     </div>
                 </div>
                 <div class="d-flex justify-content-center mt-3">
-                    <a class="btn btn-secondary btnt" href="{{url('admin/claim')}}">{{ __('message.back')}}</a>
+                    @if($IS_FREEZED == 0)
+                    <button type="button" class="btn btn-success btn-circle btn-lg"><i style="font-size: 24px" class="fa fa-unlock text-warning font-weight-bolder" aria-hidden="true"></i></button>
+                    @else
+                    <button type="button" data-toggle="modal" data-target="#unfreezedModal"  class="btn btn-danger btn-circle btn-lg"><i style="font-size: 24px" class="fa fa-lock text-warning font-weight-bolder" aria-hidden="true"></i></button>
+                    @endif
+                    <button type="button" data-toggle="modal" data-target="#closeClaimModal"  class="btn btn-danger btn-circle btn-lg"><i style="font-size: 24px" class="fa fa-window-close-o text-warning font-weight-bolder" aria-hidden="true"></i>Close Claim</button>
+                    <button type="button" data-toggle="modal" data-target="#updateStatusEtalkModal"  class="btn btn-info btn-circle btn-lg"><i style="font-size: 24px" class="fa fa-stack-overflow font-weight-bolder" aria-hidden="true"></i>Update Status Etalk</button>
                 </div>
                 <!-- End file image -->
             </div>
@@ -532,6 +538,12 @@ $totalAmount = 0;
 
 {{-- Modal CSR File--}}
 @include('claimManagement.csrModal')
+
+{{-- closeClaimModal --}}
+@include('claimManagement.closeClaimModal')
+
+{{-- updateStatusEtalkModal --}}
+@include('claimManagement.updateStatusEtalkModal')
 
 {{-- Modal input  Hospital request--}}
 @include('claimGOPManagement.requestGOPModal')

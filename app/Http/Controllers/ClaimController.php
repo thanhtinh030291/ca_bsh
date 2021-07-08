@@ -2610,14 +2610,14 @@ class ClaimController extends Controller
         }
 
         
-        HBS_CL_CLAIM::where('CLAM_OID',$claim->code_claim)->update(['IS_FREEZED'=>1]);
-        $claim->log_unfreezed()->create([
-            'cl_no' => $claim->code_claim_show,
-            'reason' => 'Close',
-            'desc' => $request->desc,
-            'created_user' => $user->id,
-            'updated_user' => $user->id,
-        ]);
+        // HBS_CL_CLAIM::where('CLAM_OID',$claim->code_claim)->update(['IS_FREEZED'=>1]);
+        // $claim->log_unfreezed()->create([
+        //     'cl_no' => $claim->code_claim_show,
+        //     'reason' => 'Close',
+        //     'desc' => $request->desc,
+        //     'created_user' => $user->id,
+        //     'updated_user' => $user->id,
+        // ]);
         return redirect('/admin/claim/'.$id)->with('status', 'Đã Close Claim thành công');
     }
 
