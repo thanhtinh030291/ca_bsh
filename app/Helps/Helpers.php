@@ -361,7 +361,7 @@ function payMethod($HBS_CL_CLAIM){
             $info_reciever = 'Số tài khoản: '.$HBS_CL_CLAIM->member->cl_pay_acct_no;
             //$banking = $HBS_CL_CLAIM->member->bank_name.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
             $banking = $HBS_CL_CLAIM->member->BankNameChange.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
-            $notify = "(Pacific Cross Việt Nam sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của khách hàng.)";
+            $notify = "Quý khách vui lòng gửi ý kiến xác nhận về kết quả bồi thường này cho Pacific Cross Việt Nam. Chúng tôi sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của Quý khách";
             $not_show_table = false;
             break;
         case 'CL_PAYMENT_METHOD_CH':
@@ -370,7 +370,7 @@ function payMethod($HBS_CL_CLAIM){
             '.Carbon\Carbon::parse($HBS_CL_CLAIM->member->cash_id_passport_date_of_issue)->format('d/m/Y').', nơi cấp: '. $HBS_CL_CLAIM->member->cash_id_passport_issue_place;
             //$banking = $HBS_CL_CLAIM->member->cash_bank_name.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
             $banking = $HBS_CL_CLAIM->member->CashBankNameChange.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
-            $notify = "(Pacific Cross Việt Nam sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của khách hàng.)";
+            $notify = "Quý khách vui lòng gửi ý kiến xác nhận về kết quả bồi thường này cho Pacific Cross Việt Nam. Chúng tôi sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của Quý khách";
             $not_show_table = false;
             break;
         case 'CL_PAYMENT_METHOD_CQ':
