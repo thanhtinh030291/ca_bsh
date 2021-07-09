@@ -2582,7 +2582,18 @@ class ClaimController extends Controller
         $namefile = Str::slug("{$export_letter->letter_template->name}_{$HBS_CL_CLAIM->memberNameCap}", '-');
         $template = 'templateEmail.sendCustomer';
         $subject = '[PCV] Thông Báo Đến Khách Hàng: '.$HBS_CL_CLAIM->MemberNameCap;
-        $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 35]);
+        $mpdf->WriteHTML('
+        <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
+            <img src="'.asset("images/header.jpg").'" alt="head">
+        </div>');
+        $mpdf->SetHTMLFooter('
+        <div style="text-align: right; font-weight: bold;">
+            <img src="'.asset("images/footer.png").'" alt="foot">
+        </div>');
+        $mpdf->WriteHTML('<div style="position: absolute; bottom: 3;
+            right:1"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
+            <div style="text-align: center">'.$claim->barcode.'</div></div>');
         $mpdf->WriteHTML(data_get($export_letter->approve, 'data'));
         $user = Auth::User();
         $data = [];
