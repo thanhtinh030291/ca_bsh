@@ -210,6 +210,7 @@ class AjaxCommonController extends Controller
         $pocy_ref_no = $HBS_CL_CLAIM->Police->pocy_ref_no;
         $memb_ref_no = $HBS_CL_CLAIM->member->mbr_no;
         $member_name = $HBS_CL_CLAIM->memberNameCap;
+        $email = $HBS_CL_CLAIM->member->email;
         return response()->json([ 'data' => $response,
                                 'data_full' => $response_full,
                                 'approve_amt' => round($approve_amt) , 
@@ -218,6 +219,7 @@ class AjaxCommonController extends Controller
                                 'pocy_ref_no' => $pocy_ref_no,
                                 'memb_ref_no' => $memb_ref_no,
                                 'member_name' => $member_name,
+                                'email' => $email
                             ]);
     }
     // get  Balance of claim  CPS 

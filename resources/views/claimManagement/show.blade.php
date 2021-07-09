@@ -244,6 +244,21 @@ $totalAmount = 0;
                                     </div>
                                 {!! Form::close() !!}
                                 @endif
+                                @if( ($item->status == $item->end_status || ($item->status == 0 && $item->end_status == 13 )) )
+                                {!! Form::button('<i class="fa fa-paper-plane-o"></i>Sent Custommer', ['data-toggle' => "modal" ,  
+                                        'data-target' => "#sendMailCustomerModal",
+                                        'data-backdrop' => "static" ,
+                                        'data-keyboard' => "false", 
+                                        'type' => 'button', 
+                                        'class' => 'btn btn-success btn-xs' , 
+                                        'onclick' => 'sendMailCustomerModal(this);',
+                                        'data-claim_id' => $data->id,
+                                        'data-letter_template_id' => $item->letter_template->id,
+                                        'data-status' => $item->status,
+                                        'data-id' => $item->id
+                                        ]) 
+                                !!}
+                                @endif
 
                                 @if(isset($item->info['notes']))
                                     <h6> Added on Etalk</h6>
@@ -482,6 +497,10 @@ $totalAmount = 0;
 
 {{-- invoiceNoticationModal--}}
 @include('claimManagement.invoiceNoticationModal')
+
+{{-- sendMailCustomerModal--}}
+@include('claimManagement.sendMailCustomerModal')
+
 @endsection
 
 
@@ -495,6 +514,16 @@ $totalAmount = 0;
 <script src="{{ asset('js/tinymce.js?vision=') .$vision }}"></script>
 <script src="{{ asset('js/jquery.tag-editor.min.js?vision=') .$vision }}"></script>
 <script>
+    
+    function sendMailCustomerModal(e){
+        var claim_id =  e.dataset.claim_id;
+        var id = e.dataset.id;
+        $(".loader").show();
+        $('#letter_email_id').val(id);
+        $('.claim_id').val(claim_id);
+        $(".loader").fadeOut("slow");
+        
+    }
     function preview(e){
         $(".loader").show();
         var claim_id =  e.dataset.claim_id;

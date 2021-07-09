@@ -359,6 +359,7 @@ class ClaimController extends Controller
             $pocy_no = data_get($payment_history_cps,'pocy_ref_no');
             $memb_no = data_get($payment_history_cps,'memb_ref_no');
             $member_name = data_get($payment_history_cps,'member_name');
+            $email = data_get($payment_history_cps,'email');
             $balance_cps = json_decode(AjaxCommonController::getBalanceCPS($data->clClaim->member->mbr_no , $data->code_claim_show)->getContent(),true);
             $balance_cps = collect(data_get($balance_cps, 'data_full'));
             $tranfer_amt = (int)$approve_amt - (int)collect($payment_history)->sum('TF_AMT')-$balance_cps->sum('DEBT_BALANCE') + (int)$adminFee;
@@ -375,6 +376,7 @@ class ClaimController extends Controller
             $payment_method = "";
             $balance_cps = collect([]);
             $inv_nos = null;
+            $email = "";
         }
          //show notication mobile
          $btn_notication = false;
@@ -395,7 +397,12 @@ class ClaimController extends Controller
         $hospital_request = $claim->hospital_request;
         $list_diagnosis = $claim->hospital_request ? collect($claim->hospital_request->diagnosis)->pluck('text', 'id') : [];
         $selected_diagnosis = $claim->hospital_request ? collect($claim->hospital_request->diagnosis)->pluck('id') : null;
-        $fromEmail = $claim->inbox_email ? $claim->inbox_email->from . "," . implode(",", $claim->inbox_email->to) : "";
+        if($claim_type == "P"){
+            $fromEmail = $claim->inbox_email ? $claim->inbox_email->from . "," . implode(",", $claim->inbox_email->to) : "";
+        }else{
+            $fromEmail = $email;
+        }
+        
         $reject_code = collect($claim->RejectCode)->flatten(1)->values()->all();
         $compact = compact(['data', 'dataImage', 'items', 'admin_list', 'listReasonReject', 
         'listLetterTemplate' , 'list_status_ad', 'user', 'payment_history', 'approve_amt','tranfer_amt','present_amt',
@@ -2558,6 +2565,38 @@ class ClaimController extends Controller
         
         sendEmailProvider($user, $email_to, 'provider', $subject, $data,$template);
         return redirect('/admin/claim/'.$claim_id)->with('status', 'Đã gửi thư cho provider thành công');
+    }
+
+    public function sendMailCustomer(Request $request){
+       
+        $claim_id = $request->claim_id;
+        $id = $request->export_letter_id;
+        $export_letter = ExportLetter::findOrFail($id);
+        $user = Auth::User();
+        $claim  = Claim::itemClaimReject()->findOrFail($claim_id);
+        $claim_type = $claim->claim_type;
+        $per_approve_sign_replace = $claim_type == "P" ? getUserSignThumb() : getUserSign();
+
+        $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
+        $diag_code = $HBS_CL_CLAIM->HBS_CL_LINE->pluck('diag_oid')->unique()->toArray();
+        $namefile = Str::slug("{$export_letter->letter_template->name}_{$HBS_CL_CLAIM->memberNameCap}", '-');
+        $template = 'templateEmail.sendCustomer';
+        $subject = '[PCV] Thông Báo Đến Khách Hàng: '.$HBS_CL_CLAIM->MemberNameCap;
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+        $mpdf->WriteHTML(data_get($export_letter->approve, 'data'));
+        $user = Auth::User();
+        $data = [];
+        $data['HBS_CL_CLAIM'] = $HBS_CL_CLAIM;
+        $data['name_lette'] = $export_letter->letter_template->name;
+        $data['attachment']['base64'] =  base64_encode($mpdf->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN)) ;
+        $data['attachment']['filename'] = $namefile . ".pdf";
+        $data['attachment']['filetype'] = "application/pdf";
+        $data['email_reply'] = $user->email;
+        $email_to = explode(",", $request->email_to);
+        
+        
+        sendEmailProvider($user, $email_to, 'provider', $subject, $data,$template);
+        return redirect('/admin/claim/'.$claim_id)->with('status', 'Đã gửi thư cho Custommer thành công');
     }
 
     public function setJetcase(Request $request, $id){
