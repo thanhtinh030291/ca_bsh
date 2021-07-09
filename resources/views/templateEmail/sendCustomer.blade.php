@@ -20,7 +20,7 @@
                       <p>Quý khách vui lòng xem thông tin chi tiết ở tệp đính kèm. </p>
                       <p>thanks.</p>
 
-                      <p>Xin đừng trả lời trực tiếp email này. Nếu bạn có bất kỳ câu hỏi hoặc nhận xét nào về email này, vui lòng liên hệ với chúng tôi theo địa chỉ: <span style="color:blue">{{$data['email_reply']}}</span><p>
+                      <p>Xin đừng trả lời trực tiếp email này. Nếu bạn có bất kỳ câu hỏi hoặc nhận xét nào về email này, vui lòng liên hệ với chúng tôi theo địa chỉ: <span style="color:blue">bshclaims@pacificcross.com.vn</span><p>
                       <p> Thanks & Best Regards,</p>
                     </td>
                   </tr>
