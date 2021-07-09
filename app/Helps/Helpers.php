@@ -152,7 +152,7 @@ function sendEmail($user_send, $data , $template , $subject)
     return true;
 }
 
-function sendEmailProvider($user_send, $to_email , $to_name, $subject, $data , $template)
+function sendEmailProvider($user_send, $to_email , $to_name, $subject, $data , $template, $reply = null)
 {
     if (!data_get($user_send, 'email')) {
         return false;
@@ -164,11 +164,13 @@ function sendEmailProvider($user_send, $to_email , $to_name, $subject, $data , $
         [
             'user' => $user_send, 
             'data' => isset($data) ?  $data : []
-        ], function ($mail) use ($user_send, $to_email, $to_name, $subject, $app_name, $app_email, $data) {
+        ], function ($mail) use ($user_send, $to_email, $to_name, $subject, $app_name, $app_email, $data , $reply) {
+            $email_repply = $reply == null ? $user_send->email : $reply;
+            $email_name = $reply == null ? $user_send->name : "Claim BSH";
             $mail
                 ->to( $to_email )
                 ->cc([$user_send->email, $app_email])
-                ->replyTo($user_send->email, $user_send->name)
+                ->replyTo( $email_repply , $email_name)
                 ->attachData(base64_decode($data['attachment']['base64']), $data['attachment']['filename'], ['mime' => $data['attachment']['filetype']])
                 ->subject($subject ."- #".config('constants.company')."#");
         }

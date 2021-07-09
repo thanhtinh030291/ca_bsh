@@ -2604,9 +2604,9 @@ class ClaimController extends Controller
         $data['attachment']['filetype'] = "application/pdf";
         $data['email_reply'] = $user->email;
         $email_to = explode(",", $request->email_to);
+        $email_to = array_diff( $email_to, ['admin@pacificcross.com.vn'] );
         
-        
-        sendEmailProvider($user, $email_to, 'provider', $subject, $data,$template);
+        sendEmailProvider($user, $email_to, 'provider', $subject, $data,$template,'bshclaims@pacificcross.com.vn');
         return redirect('/admin/claim/'.$claim_id)->with('status', 'Đã gửi thư cho Custommer thành công');
     }
 
