@@ -400,7 +400,7 @@ class ClaimController extends Controller
         if($claim_type == "P"){
             $fromEmail = $claim->inbox_email ? $claim->inbox_email->from . "," . implode(",", $claim->inbox_email->to) : "";
         }else{
-            $fromEmail = $email;
+            $fromEmail = $email .",cskh.bsh@pacificcross.com.vn";
         }
         
         $reject_code = collect($claim->RejectCode)->flatten(1)->values()->all();
