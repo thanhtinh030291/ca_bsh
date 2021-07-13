@@ -364,7 +364,7 @@ function payMethod($HBS_CL_CLAIM){
             $info_reciever = 'Số tài khoản: '.$HBS_CL_CLAIM->member->cl_pay_acct_no;
             //$banking = $HBS_CL_CLAIM->member->bank_name.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
             $banking = $HBS_CL_CLAIM->member->BankNameChange.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
-            $notify = "Quý khách vui lòng gửi ý kiến xác nhận về kết quả bồi thường này cho Pacific Cross Việt Nam. Chúng tôi sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của Quý khách";
+            $notify = "“khách vui lòng xác nhận có đồng ý với kết quả bồi thường ngày trong vòng 03 ngày để công ty tiến hành chuyển tiền claim”";
             $not_show_table = false;
             break;
         case 'CL_PAYMENT_METHOD_CH':
@@ -373,7 +373,7 @@ function payMethod($HBS_CL_CLAIM){
             '.Carbon\Carbon::parse($HBS_CL_CLAIM->member->cash_id_passport_date_of_issue)->format('d/m/Y').', nơi cấp: '. $HBS_CL_CLAIM->member->cash_id_passport_issue_place;
             //$banking = $HBS_CL_CLAIM->member->cash_bank_name.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
             $banking = $HBS_CL_CLAIM->member->CashBankNameChange.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
-            $notify = "Quý khách vui lòng gửi ý kiến xác nhận về kết quả bồi thường này cho Pacific Cross Việt Nam. Chúng tôi sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của Quý khách";
+            $notify = "“khách vui lòng xác nhận có đồng ý với kết quả bồi thường ngày trong vòng 03 ngày để công ty tiến hành chuyển tiền claim”";
             $not_show_table = false;
             break;
         case 'CL_PAYMENT_METHOD_CQ':
@@ -408,7 +408,7 @@ function payMethod($HBS_CL_CLAIM){
                         </tr>
                         <tr>
                             <td style="border: 1px solid ; font-family: arial, helvetica, sans-serif ; font-size: 11pt ; border-color: #1e91e3" colspan="2">
-                                <p>'.$notify.'</p>
+                                <p><strong>'.$notify.'</strong></p>
                             </td>
                         </tr>
                     </tbody>
