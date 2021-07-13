@@ -171,6 +171,7 @@ function sendEmailProvider($user_send, $to_email , $to_name, $subject, $data , $
                 ->to( $to_email )
                 ->cc([$user_send->email, $app_email])
                 ->replyTo( $email_repply , $email_name)
+                ->replyTo( 'cskh.bsh@pacificcross.com.vn' , 'CSKH')
                 ->attachData(base64_decode($data['attachment']['base64']), $data['attachment']['filename'], ['mime' => $data['attachment']['filetype']])
                 ->subject($subject ."- #".config('constants.company')."#");
         }
