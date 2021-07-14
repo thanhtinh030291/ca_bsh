@@ -32,7 +32,7 @@ $max = config('constants.minMaxLength.max');
             {{ Form::open(array('url' => route('mailbox.index'), 'method' => 'get', 'class' => 'form-inline')) }}
                 <div class="form-group mx-sm-3 mb-2">
                     <label for="inputPassword2" class="sr-only">text</label>
-                    {{Form::text('search', data_get($search_params, 'message'), ['class' => 'form-control', 'placeholder'=>"Search"])}}
+                    {{Form::text('search', data_get($search_params, 'search'), ['class' => 'form-control', 'placeholder'=>"Search"])}}
                 </div>
                 <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-search" aria-hidden="true"></i></button>
             {{ Form::close() }}
