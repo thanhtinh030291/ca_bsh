@@ -2594,7 +2594,13 @@ class ClaimController extends Controller
         $mpdf->WriteHTML('<div style="position: absolute; bottom: 3;
             right:1"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
             <div style="text-align: center">'.$claim->barcode.'</div></div>');
-        $mpdf->WriteHTML(data_get($export_letter->approve, 'data'));
+        if($export_letter->approve != null){
+                    
+            $content = $export_letter->approve['data'];
+        }else{
+            $content = $export_letter->wait['data'];
+        }
+        $mpdf->WriteHTML($content);
         $user = Auth::User();
         $data = [];
         $data['HBS_CL_CLAIM'] = $HBS_CL_CLAIM;
