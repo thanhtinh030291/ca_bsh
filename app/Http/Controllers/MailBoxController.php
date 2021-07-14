@@ -47,7 +47,7 @@ class MailBoxController extends Controller
     {
         $search_params = [
         'imap_page' => $request->get('imap_page'),
-        //     'message' => $request->get('search'),
+        'search' => $request->get('search'),
         //     'important' => $request->get('important')
         ];
         $client = \Webklex\IMAP\Facades\Client::account('default');
@@ -64,7 +64,7 @@ class MailBoxController extends Controller
         $mess = $folder->messages()->setFetchOrder("desc")->all()->get();
         $mess = $mess->paginate($per_page = 20, $page = $search_params['imap_page'], $page_name = 'imap_page');
         
-        return view('mailBoxManagement/index',compact('folder','mess'));
+        return view('mailBoxManagement/index',compact('folder','mess','search_params'));
     }
 
     public function show($id)
