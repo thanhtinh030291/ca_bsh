@@ -402,7 +402,14 @@ class ClaimController extends Controller
         if($claim_type == "P"){
             $fromEmail = $claim->inbox_email ? $claim->inbox_email->from . "," . implode(",", $claim->inbox_email->to) : "";
         }else{
-            $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,hiennq@bshc.com.vn,thaontp1@bshc.com.vn".",$hr_email";
+            
+            if($pocy_no == '031-KD07/21/01.1D/HD/00008'){
+                $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,thaontp1@bshc.com.vn,khanhntv1@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
+            }elseif($pocy_no == '014-KDBH08/21/01.1D/HD/00002'){
+                $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,dongnv@bshc.com.vn,hoanvt@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
+            }else {
+                $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,anhnl1@bshc.com.vn,anhntk@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
+            }
         }
         
         $reject_code = collect($claim->RejectCode)->flatten(1)->values()->all();
