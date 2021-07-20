@@ -360,6 +360,7 @@ class ClaimController extends Controller
             $memb_no = data_get($payment_history_cps,'memb_ref_no');
             $member_name = data_get($payment_history_cps,'member_name');
             $email = data_get($payment_history_cps,'email');
+            $hr_email = data_get($payment_history_cps,'hr_email');
             $balance_cps = json_decode(AjaxCommonController::getBalanceCPS($data->clClaim->member->mbr_no , $data->code_claim_show)->getContent(),true);
             $balance_cps = collect(data_get($balance_cps, 'data_full'));
             $tranfer_amt = (int)$approve_amt - (int)collect($payment_history)->sum('TF_AMT')-$balance_cps->sum('DEBT_BALANCE') + (int)$adminFee;
@@ -377,6 +378,7 @@ class ClaimController extends Controller
             $balance_cps = collect([]);
             $inv_nos = null;
             $email = "";
+            $hr_email = "";
         }
          //show notication mobile
          $btn_notication = false;
@@ -400,7 +402,7 @@ class ClaimController extends Controller
         if($claim_type == "P"){
             $fromEmail = $claim->inbox_email ? $claim->inbox_email->from . "," . implode(",", $claim->inbox_email->to) : "";
         }else{
-            $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,hiennq@bshc.com.vn,thaontp1@bshc.com.vn";
+            $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,hiennq@bshc.com.vn,thaontp1@bshc.com.vn".",$hr_email";
         }
         
         $reject_code = collect($claim->RejectCode)->flatten(1)->values()->all();
