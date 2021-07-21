@@ -1,4 +1,4 @@
-@extends('templateEmail.main')
+@extends('templateEmail.main2')
 @section('content')
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" >
     <tr>

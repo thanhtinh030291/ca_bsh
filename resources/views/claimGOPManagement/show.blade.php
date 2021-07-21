@@ -313,7 +313,7 @@ $totalAmount = 0;
                                     </div>
                                 {!! Form::close() !!}
                                 @endif
-                                @if($item->status == $item->end_status && $item->created_user == $user->id )
+                                @if($item->status == $item->end_status )
                                 {!! Form::button('<i class="fa fa-paper-plane-o"></i>Sent Prov', ['data-toggle' => "modal" ,  
                                         'data-target' => "#sendMailModal",
                                         'data-backdrop' => "static" ,
