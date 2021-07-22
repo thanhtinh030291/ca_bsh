@@ -23,7 +23,7 @@
                         <li class="MsoNormal" style="color: #c00000; mso-list: l0 level1 lfo1;"><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; mso-fareast-font-family: 'Times New Roman';">PCV sẽ không thanh toán cho các hồ sơ quá hạn 30 ngày kể từ ngày xác nhận bảo lãnh chi phí thực tế.</span></li>
                         <li class="MsoNormal" style="color: black; mso-list: l0 level1 lfo1;"><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; mso-fareast-font-family: 'Times New Roman';">Và gửi toàn bộ Hồ sơ gốc có đóng dấu của bệnh viện; <strong>Giấy xác nhận của khách hàng</strong> (nếu có); tất cả chứng từ đã trao đổi qua email khi yêu cầu bảo lãnh (có đóng dấu của bệnh viện) về cho <strong>Pacific Cross Việt Nam</strong>.</span></li>
                         </ol>
-                        <p class="MsoNormal" style="margin-top: 6.0pt; text-align: justify;"><strong><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; color: #c00000; mso-fareast-language: EN-GB;">Vui lòng xuất Hóa đơn GTGT theo thông tin của BSH Insurance - Việt Nam:</span></strong></p>
+                        <p class="MsoNormal" style="margin-top: 6.0pt; text-align: justify;"><strong><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; color: #c00000; mso-fareast-language: EN-GB;">Vui lòng xuất Hóa đơn GTGT theo thông tin của BSH Insurance :</span></strong></p>
                         <table class="MsoNormalTable" style="border-collapse: collapse; mso-yfti-tbllook: 1184; mso-padding-alt: 0in 0in 0in 0in;" border="0" cellspacing="0" cellpadding="0">
                         <tbody>
                         <tr style="mso-yfti-irow: 0; mso-yfti-firstrow: yes; height: 31.5pt;">
@@ -34,28 +34,12 @@
                         <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">TÊN KHÁCH HÀNG</span></strong></p>
                         </td>
                         </tr>
-                        <tr style="mso-yfti-irow: 1; height: 52.3pt;">
-                        <td style="width: 118.95pt; border: solid windowtext 1.0pt; border-top: none; padding: 0in 5.4pt 0in 5.4pt; height: 52.3pt;" valign="top" width="159">
-                        <p class="MsoNormal" style="line-height: 105%;"><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Tên công ty</span></p>
-                        </td>
-                        <td style="width: 305.9pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0in 5.4pt 0in 5.4pt; height: 52.3pt;" valign="top" width="408">
-                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">...</span></strong></p>
-                        </td>
-                        </tr>
                         <tr style="mso-yfti-irow: 2; height: 27.6pt;">
                         <td style="width: 118.95pt; border: solid windowtext 1.0pt; border-top: none; padding: 0in 5.4pt 0in 5.4pt; height: 27.6pt;" valign="top" width="159">
                         <p class="MsoNormal" style="line-height: 105%;"><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Địa chỉ</span></p>
                         </td>
                         <td style="width: 305.9pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0in 5.4pt 0in 5.4pt; height: 27.6pt;" valign="top" width="408">
-                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Địa chỉ trên CMND/CCCD của khách hàng</span></strong></p>
-                        </td>
-                        </tr>
-                        <tr style="mso-yfti-irow: 3; mso-yfti-lastrow: yes; height: 29.8pt;">
-                        <td style="width: 118.95pt; border: solid windowtext 1.0pt; border-top: none; padding: 0in 5.4pt 0in 5.4pt; height: 29.8pt;" valign="top" width="159">
-                        <p class="MsoNormal" style="line-height: 105%;"><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Mã số thuế</span></p>
-                        </td>
-                        <td style="width: 305.9pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0in 5.4pt 0in 5.4pt; height: 29.8pt;" valign="top" width="408">
-                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">...</span></strong></p>
+                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Địa chỉ khách hàng</span></strong></p>
                         </td>
                         </tr>
                         </tbody>
