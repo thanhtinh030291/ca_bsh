@@ -89,7 +89,7 @@
         <thead>
             <tr>
                 <th>
-                    CATHAY Claim
+                    Claim ID
                 </th>
             </tr>    
         </thead>

@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th>
-                    CaThay Claim
+                    Claim ID
                 </th>
             </tr>
         </thead>
