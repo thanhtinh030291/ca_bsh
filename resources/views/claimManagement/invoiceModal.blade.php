@@ -27,10 +27,10 @@
         </div>
         <br />
         {{ Form::label('original_invoice_no', 'Số hóa đơn (Đầy đủ)', array('class' => 'labelas')) }}<span class='text-danger'>*</span>
-        {{ Form::text('original_invoice_no', $data->original_invoice_no, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
+        {{ Form::text('original_invoice_no', $data->original_invoice_no, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>
 
         {{ Form::label('original_invoice_no_not_ready', 'Số hóa đơn (Đợi bổ sung)', array('class' => 'labelas')) }}<span class='text-danger'>*</span>
-        {{ Form::text('original_invoice_no_not_ready', $data->original_invoice_no_not_ready, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}
+        {{ Form::text('original_invoice_no_not_ready', $data->original_invoice_no_not_ready, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}
     </div>
     <div id="e_invoice" class="e_invoice vat_type border border-warning p-3 mt-2" style="{{ (data_get($data,"e_invoice_no") || data_get($data,"e_invoice_no_not_ready"))? "" : "display:none"}}">
         {{ Form::label('title', 'Hóa đơn điện tử ', array('class' => 'labelas')) }}<br />
@@ -46,9 +46,9 @@
         <a href="https://einvoice.vn/tra-cuu" target="_blank">https://einvoice.vn/tra-cuu</a>
         <br />
         {{ Form::label('e_invoice_no', 'Số hóa đơn (hợp lệ)', array('class' => 'labelas')) }}<span class='text-danger'>*</span>
-        {{ Form::text('e_invoice_no', $data->e_invoice_no, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
+        {{ Form::text('e_invoice_no', $data->e_invoice_no, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>
         {{ Form::label('e_invoice_no_not_ready', 'Số hóa đơn (Không hợp lệ)', array('class' => 'labelas')) }}<span class='text-danger'>*</span>
-        {{ Form::text('e_invoice_no_not_ready', $data->e_invoice_no_not_ready, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}
+        {{ Form::text('e_invoice_no_not_ready', $data->e_invoice_no_not_ready, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}
     </div>
     <div id="converted_invoice" class="vat_type converted_invoice border border-warning p-3 mt-2" style="{{(data_get($data,"converted_invoice_no") || data_get($data,"converted_invoice_no_not_ready")) ? "" : "display:none"}}">
         {{ Form::label('title', 'Hóa đơn chuyển đổi ', array('class' => 'labelas')) }}<br />
@@ -63,9 +63,9 @@
         
         <br />
         {{ Form::label('original_invoice_no', 'Số hóa đơn (hợp lệ)', array('class' => 'labelas')) }}<span class='text-danger'>*</span>
-        {{ Form::text('converted_invoice_no', $data->converted_invoice_no, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
+        {{ Form::text('converted_invoice_no', $data->converted_invoice_no, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>
         {{ Form::label('original_invoice_no_not_ready', 'Số hóa đơn (Không hợp lệ)', array('class' => 'labelas')) }}<span class='text-danger'>*</span>
-        {{ Form::text('converted_invoice_no_not_ready', $data->converted_invoice_no_not_ready, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
+        {{ Form::text('converted_invoice_no_not_ready', $data->converted_invoice_no_not_ready, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>
     </div>
     <button type="submit" class="btn btn-primary float_left " > {{__('message.save')}}</button>
     @if ($btn_notication)

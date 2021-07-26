@@ -143,6 +143,10 @@ $totalAmount = 0;
                                             {!! Form::button('Yêu Cầu Manager xác nhận', ['type' => 'submit','name'=>'type_submit','value' => 'request','class' => ' btn btn-info' ]) !!}
                                         {{ Form::close() }}
                                     @endif
+                                    <div class="card mt-2">
+                                        {{-- invoiceModal--}}
+                                        @include('claimManagement.invoiceModal')
+                                    </div>
                                 </div>
                                 <div class="col-md-5">
                                     {{ Form::open(array('url' => '/admin/claim/uploadSortedFileGOP/'.$data->id, 'method'=>'post', 'files' => true))}}
@@ -155,9 +159,17 @@ $totalAmount = 0;
                                             <button type="submit" class="btn btn-primary " > {{__('message.save')}}</button>
                                         @endhasanyrole
                                         {{-- <button type="button" onclick="upload_summary()" class="btn btn-primary m-2">Send to summary Etalk</button> --}}
+                                        {!! Form::button('Delete pages', ['data-toggle' => "modal" ,  
+                                                'data-target' => "#deletePagesModal",
+                                                'type' => 'button', 
+                                                'class' => ' btn text-danger' , 
+                                                'onclick' => 'comfirmPayment(this);',
+                                                ]) !!}
                                     </div>
                                     <!-- End file image -->
                                     {{ Form::close() }}
+                                    {{ Form::label('inv_nos', 'Số hóa đơn (HBS)', array('class' => 'labelas')) }}
+                                    {{ Form::text('inv_nos', $inv_nos, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>
                                     {{-- <button type="button" onclick="sendMfile();" class="btn btn-success " ><i class="fa fa-mixcloud" aria-hidden="true"></i> Send To M-Files</button>
                                     @if ($data->LogMfile != null)
                                         <p id="mfile-update-time">M-File latest version at {{$data->LogMfile->updated_at}}
@@ -554,6 +566,13 @@ $totalAmount = 0;
 
 {{-- reject PayModal--}}
 @include('claimGOPManagement.rejectPayModal')
+
+{{-- invoiceNoticationModal--}}
+@include('claimManagement.invoiceNoticationModal')
+
+{{-- deletePagesModal--}}
+@include('claimManagement.deletePagesModal')
+
 @endsection
 
 
@@ -572,6 +591,7 @@ $totalAmount = 0;
 <script src="{{ asset('js/dropzone.min.js?vision=') .$vision }}"></script>
 <script src="{{ asset('js/DataStream.js?vision=') .$vision }}"></script>
 <script src="{{ asset('js/msg.reader.js?vision=') .$vision }}"></script>
+<script src="{{ asset('js/jquery.tag-editor.min.js?vision=') .$vision }}"></script>
 <script>
     
     
@@ -901,7 +921,9 @@ $totalAmount = 0;
     }
     
     $(document).ready(function () {
-        
+        $('.tag-editor').tagEditor({
+            removeDuplicates: true
+        });
         
         //$("div#requestGOPForm").dropzone({url: "{{ url('admin/attachEmail') }}/{{$data->id}}"});
         Dropzone.options.requestGOPForm = {
@@ -1021,8 +1043,24 @@ $totalAmount = 0;
                 img_keywords: "happy, places"
             }
         });
+        $("input[name='vat_type[]']").change(function() {
+            on_off_invoice();
         });
-        gop_pres_amt_change();
+    });
+    gop_pres_amt_change();
+    function on_off_invoice(){
+        $(".vat_type").hide();
+        
+        if($("#original_invoice").prop( "checked" ) == true){
+            $(".original_invoice").show();
+        }
+        if($("#e_invoice").prop( "checked" )  == true){
+            $(".e_invoice").show();
+        }
+        if($("#converted_invoice").prop( "checked" ) == true){
+            $(".converted_invoice").show();
+        }
+    }
         
 </script>
 @endsection
