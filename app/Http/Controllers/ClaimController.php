@@ -2813,4 +2813,40 @@ class ClaimController extends Controller
 
         return redirect('/admin/claim/'.$id)->with('status', 'Đã Notication thành công');
     }
+
+    // change Etalk 
+    public function changeStatusEtalk(Request $request){
+        $claim_id = $request->claim_id;
+        $user = Auth::User();
+        $claim  = Claim::itemClaimReject()->findOrFail($claim_id);
+        $barcode = $claim->barcode;
+        $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
+        $body = [
+            'user_email' => $user->email,
+            'issue_id' => $barcode,
+            'text_note' => 'Cập nhật lại status',
+
+        ];
+        $diff = $HBS_CL_CLAIM->SumPresAmt - $HBS_CL_CLAIM->SumAppAmt ;
+        if($HBS_CL_CLAIM->SumAppAmt == 0 ){
+                $body['status_id'] = config('constants.status_mantic_value.declined');
+        }elseif($diff == 0){
+                $body['status_id'] = config('constants.status_mantic_value.accepted');
+        }else {
+                $body['status_id'] = config('constants.status_mantic_value.partiallyaccepted');
+        }
+        
+        try {
+            $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
+            $res = json_decode($res->getBody(),true);
+        } catch (Exception $e) {
+
+            $request->session()->flash(
+                'errorStatus', 
+                generateLogMsg($e)
+            );
+            return redirect('/admin/claim/'.$claim_id)->withInput();
+        }
+        return redirect('/admin/claim/'.$claim_id)->with('status', __('message.update_claim'));
+    }
 }
