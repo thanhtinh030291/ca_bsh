@@ -31,6 +31,17 @@ function getUserSignThumb(){ // for provider claim
     return $htm;
 }
 
+function getUserSignThumb_create($id){ // for provider claim
+    
+    $user = User::findOrFail($id);
+    $dirStorage = config('constants.signarureStorage');
+    $dataImage =  $dirStorage . $user->signarure ;
+    $htm = "<span><img src='{$dataImage}' alt='face' height='73' width='100'></img><br/>
+            $user->name
+        </span>";
+    return $htm;
+}
+
 function saveImage($file ,$path, $thumbnail=null){
     if (!File::exists(storage_path("app".$path)))
     {

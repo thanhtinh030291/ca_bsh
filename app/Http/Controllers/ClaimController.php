@@ -734,8 +734,8 @@ class ClaimController extends Controller
         }
 
         if ($request->save_letter == 'save'){
-            //$create_user_sign = $claim_type == "P" ? getUserSignThumb($export_letter->created_user) : getUserSign($export_letter->created_user);
-            $create_user_sign = $user_create->name;
+            $create_user_sign = getUserSignThumb_create($export_letter->created_user);
+            //$create_user_sign = $user_create->name;
             $export_letter->wait = [  'user' => $user->id,
                 'created_at' => Carbon::now()->toDateTimeString(),
                 'data' => str_replace('[[$per_creater_sign]]', $create_user_sign, $request->template)
@@ -1280,8 +1280,8 @@ class ClaimController extends Controller
         
        
             $data['content'] = "<html><body>".$data['content']."</body></html>";
-            //$create_user_sign = getUserSignThumb($export_letter->created_user);
-            $create_user_sign = $user_create->name;
+            $create_user_sign = getUserSignThumb_create($export_letter->created_user);
+            //$create_user_sign = $user_create->name;
             $data['content'] = str_replace('[[$per_creater_sign]]', $create_user_sign, $data['content']);
             $data['content'] = str_replace('[[$per_approve_sign]]', "", $data['content']);
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 225, 'margin_left' => 22]);
@@ -1385,8 +1385,8 @@ class ClaimController extends Controller
         $user_create = User::findOrFail($export_letter->created_user);
         $claim  = Claim::findOrFail($claim_id);
         $claim_type = $claim->claim_type;
-        //$create_user_sign = getUserSign($export_letter->created_user);
-        $create_user_sign = $user_create->name;
+        $create_user_sign = getUserSignThumb_create($export_letter->created_user);
+        //$create_user_sign = $user_create->name;
         $data['content'] = str_replace('[[$per_creater_sign]]', $create_user_sign, $data['content']);
 
         if($approve != null){
