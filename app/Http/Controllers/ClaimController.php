@@ -1593,7 +1593,7 @@ class ClaimController extends Controller
                             <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">(VNĐ)</th>
                             <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">(VNĐ)</th>
                         </tr>
-                    <thead>';
+                    </thead>';
         $IP = [];
         $OP = [];
         $DT = [];
