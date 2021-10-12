@@ -47,7 +47,7 @@ class CheckFinishAndPay extends Command
         dump("start : " . Carbon::now());
         $dt = Carbon::now();
         $dt_check  = $dt->subDays(10)->format('Y-m-d h:i:s');
-        $FinishAndPay = FinishAndPay::join('claim','claim.id','=','claim_id')->where('claim_type',"M")->where('notify',1)->where('finished', 0)->pluck('mantis_id')->toArray();
+        $FinishAndPay = FinishAndPay::join('claim','claim.id','=','claim_id')->where('claim_type',"M")->where('notify',1)->where('finished', 0)->pluck('finish_and_pay.mantis_id')->toArray();
         $ready_to_pay_id = MANTIS_CUSTOM_FIELD::where('name','Has Payment Info')->first()->id;
         $finished = MANTIS_CUSTOM_FIELD_STRING::whereIn('bug_id',$FinishAndPay)
         ->where('field_id', $ready_to_pay_id) // Has Payment Info
