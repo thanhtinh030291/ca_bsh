@@ -391,7 +391,7 @@ class ClaimController extends Controller
         $can_pay_rq = false;
         $count_ap = $export_letter->where('apv_amt',$approve_amt)->where('approve',"!=",null)->count();
         $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Has Payment Info')->first()->id;
-        $client_approved_id = MANTIS_CUSTOM_FIELD::where('name','Client Approved')->first()->id;
+        $client_approved_id = \App\MANTIS_CUSTOM_FIELD::where('name','Client Approved')->first()->id;
         $ready_to_pay = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$ready_to_pay_id)->where('value','Yes')->first();
         $ready_to_pay2 = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$client_approved_id)->where(function ($query) {
             $query->where('value','Yes')
