@@ -70,6 +70,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/changeStatusEtalk','ClaimController@changeStatusEtalk')->name('changeStatusEtalk');
         Route::get('/sendSummaryEtalk/{id}',  'ClaimController@sendSummaryEtalk')->name('sendSummaryEtalk');
         Route::post('/attachEmail/{id}',  'ClaimController@attachEmail')->name('attachEmail');
+        Route::post('/custommerConfirm/{id}',  'ClaimController@custommerConfirm')->name('custommerConfirm');
 
         
         Route::post('/addNote','ClaimController@addNote')->name('addNote');

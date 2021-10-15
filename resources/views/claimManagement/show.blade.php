@@ -183,7 +183,13 @@ $totalAmount = 0;
                             @if($balance_cps->sum('DEBT_BALANCE') > 0)
                                 <p class="text-danger">Khách Hàng đang nợ có thể đòi : <span class="font-weight-bold">{{formatPrice($balance_cps->sum('DEBT_BALANCE'), ' đ')}}</span></p>
                             @endif
-                            
+                            {{--Customer confirm--}}
+                            {{ Form::label('type',  "Customer confirm", array('class' => 'col-md-6 mt-2')) }}
+                            {!! Form::button('Customer confirm', ['data-toggle' => "modal" ,  
+                                                'data-target' => "#custommerConfirmModal",
+                                                'type' => 'button', 
+                                                'class' => ' btn btn-info mt-2' , 
+                                                ]) !!}
                         </div>
                     </div>
                 </div>
@@ -501,6 +507,9 @@ $totalAmount = 0;
 {{-- sendMailCustomerModal--}}
 @include('claimManagement.sendMailCustomerModal')
 
+{{-- custommerConfirmModal--}}
+@include('claimManagement.custommerConfirmModal')
+
 @endsection
 
 
@@ -514,7 +523,7 @@ $totalAmount = 0;
 <script src="{{ asset('js/tinymce.js?vision=') .$vision }}"></script>
 <script src="{{ asset('js/jquery.tag-editor.min.js?vision=') .$vision }}"></script>
 <script>
-    
+    $("#url_form_request").fileinput();
     function sendMailCustomerModal(e){
         var claim_id =  e.dataset.claim_id;
         var id = e.dataset.id;

@@ -391,8 +391,13 @@ class ClaimController extends Controller
         $can_pay_rq = false;
         $count_ap = $export_letter->where('apv_amt',$approve_amt)->where('approve',"!=",null)->count();
         $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Has Payment Info')->first()->id;
+        $client_approved_id = MANTIS_CUSTOM_FIELD::where('name','Client Approved')->first()->id;
         $ready_to_pay = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$ready_to_pay_id)->where('value','Yes')->first();
-        if($count_ap > 0 && $ready_to_pay != null){
+        $ready_to_pay2 = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$client_approved_id)->where(function ($query) {
+            $query->where('value','Yes')
+            ->orWhere('value', 'Client Timeout');
+        })->first();
+        if($count_ap > 0 && $ready_to_pay != null && $ready_to_pay2){
             $can_pay_rq = true;
         }
         $manager_gop_accept_pay = 'error';
@@ -1119,7 +1124,8 @@ class ClaimController extends Controller
                     'payed' => 0,
                     'user' => $user->id,
                     'notify' => 1,
-                    'pay_time' => $pay_time + 1
+                    'pay_time' => $pay_time + 1,
+                    'date_tbbt' => preg_match('/(Thư thông báo bồi thường)/', $export_letter->letter_template->name , $matchess) ? Carbon::now()->toDateTimeString() : null,
                 ]);
             }
         }
@@ -2848,5 +2854,68 @@ class ClaimController extends Controller
             return redirect('/admin/claim/'.$claim_id)->withInput();
         }
         return redirect('/admin/claim/'.$claim_id)->with('status', __('message.update_claim'));
+    }
+
+    // custommerConfirm 
+    public function custommerConfirm(Request $request,$id){
+        $request->validate([
+            '_url_form_request' => 'required',
+            'note' => 'required',
+        ],
+        [
+            '_url_form_request.required' => 'Bạn cần phải gửi file đính kèm của khách hàng xác nhận',
+
+        ]
+    );
+        $user = Auth::User();
+        $claim  = Claim::findOrFail($id);
+        $body = [];
+        $body = [
+            'user_email' => $user->email,
+            'issue_id' => $claim->barcode,
+            'text_note' =>  $request->note,
+        ];
+        
+        $body['files'] = [
+                [
+                    'name' => $request->file('_url_form_request')->getClientOriginalName(),
+                    "content" => base64_encode($request->file('_url_form_request')->get())
+                ]
+            ];
+        
+        
+        try {
+            
+            $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
+
+            $headers = [
+                'Content-Type' => 'application/json',
+                'Authorization' => config('constants.token_mantic'),
+            ];
+            $client = new \GuzzleHttp\Client([
+                    'headers' => $headers
+                ]);
+            $response = $client->request("PATCH", config('constants.url_mantic_api') . "api/rest/issues/$claim->barcode", ['form_params' => [
+                "custom_fields" => [
+                    [
+                        "field" => [
+                            'name' => 'Client Approved'
+                        ],
+                        "value" => "Yes"
+                    ]
+                ]
+            ]]);
+            
+            
+        } catch (Exception $e) {
+
+            $request->session()->flash(
+                'errorStatus', 
+                generateLogMsg($e)
+            );
+            return redirect('/admin/claim/'.$claim_id)->withInput();
+        }
+        
+        return redirect('/admin/claim/'.$id)->with('status', __('message.update_claim'));
     }
 }
