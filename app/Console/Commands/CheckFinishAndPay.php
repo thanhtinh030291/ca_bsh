@@ -78,7 +78,7 @@ class CheckFinishAndPay extends Command
         $time_t = Carbon::now()->subDays(3)->toDateTimeString();
         $client_approved_id = MANTIS_CUSTOM_FIELD::where('name','Client Approved')->first()->id;
         $overtime = FinishAndPay::join('claim','claim.id','=','claim_id')->where('claim_type',"M")->where('notify',1)->where('date_tbbt',">=", $time_t)->pluck('finish_and_pay.mantis_id')->toArray();
-        $mt_ov = MANTIS_CUSTOM_FIELD_STRING::whereIn('bug_id',[88])
+        $mt_ov = MANTIS_CUSTOM_FIELD_STRING::whereIn('bug_id',$overtime)
         ->where('field_id', $client_approved_id) 
         ->where(function ($query) {
             $query->where('value','')
