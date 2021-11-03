@@ -411,7 +411,7 @@ class ClaimController extends Controller
             if($pocy_no == '031-KD07/21/01.1D/HD/00008'){
                 $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,thaontp1@bshc.com.vn,khanhntv1@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
             }elseif($pocy_no == '014-KDBH08/21/01.1D/HD/00002'){
-                $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,dongnv@bshc.com.vn,hoanvt@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
+                $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,dongnv@bshc.com.vn,hoanvt@bshc.com.vn,hiennq@bshc.com.vn,tien.nguyen@waverleysoftware.com".",$hr_email";
             }else {
                 $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,anhnl1@bshc.com.vn,anhntk@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
             }
