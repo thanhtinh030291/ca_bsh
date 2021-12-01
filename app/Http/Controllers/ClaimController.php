@@ -393,7 +393,7 @@ class ClaimController extends Controller
          //show btn payment 
         $can_pay_rq = false;
         $count_ap = $export_letter->where('apv_amt',$approve_amt)->where('approve',"!=",null)->count();
-        $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Has Payment Info')->first()->id;
+        $ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Pay Claim')->first()->id;
         $client_approved_id = \App\MANTIS_CUSTOM_FIELD::where('name','Client Approved')->first()->id;
         $ready_to_pay = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$ready_to_pay_id)->where('value','Yes')->first();
         $ready_to_pay2 = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$client_approved_id)->where(function ($query) {
@@ -415,7 +415,9 @@ class ClaimController extends Controller
                 $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,thaontp1@bshc.com.vn,khanhntv1@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
             }elseif($pocy_no == '014-KDBH08/21/01.1D/HD/00002'){
                 $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,dongnv@bshc.com.vn,hoanvt@bshc.com.vn,hiennq@bshc.com.vn,tien.nguyen@waverleysoftware.com".",$hr_email";
-            }else {
+            }elseif($pocy_no =='030-KT/21/01.DX/HD/00001')
+            $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,bt.cn@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
+            else {
                 $fromEmail = $email .",cskh.bsh@pacificcross.com.vn,anhnl1@bshc.com.vn,anhntk@bshc.com.vn,hiennq@bshc.com.vn".",$hr_email";
             }
         }
