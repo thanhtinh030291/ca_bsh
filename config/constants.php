@@ -193,5 +193,18 @@ return[
         'original_invoice' => 'Hóa đơn góc',
         'e_invoice' => 'Hóa đơn điện tử',
         'converted_invoice' => 'Hóa đơn đã chuyển đổi',
+    ],
+    'benhead' => [
+        'vis_yr' => "Ngày/Năm",
+        'vis_day' => "Lần/Mỗi Ngày",
+        'amt_vis' => "Đồng/Mỗi Lần Thăm Khám",
+        'amt_yr' => "Đồng/Năm",
+        'amt_dis_yr' => "Đồng/Mỗi Bệnh/Năm",
+        'amt_life' => "Đồng/Trọn Đời",
+        'day_dis_yr' => "Ngày/Mỗi Bệnh/Năm",
+        'amt_day' => "Đồng/Ngày",
+        'amt_dis_vis' => "Đồng/Mỗi Bệnh/Mỗi Lần",
+        'amt_dis_life' => "Đồng/Mỗi Bệnh/Trọn Đời",
     ]
+
 ];
