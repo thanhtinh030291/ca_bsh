@@ -821,7 +821,7 @@ class ClaimController extends Controller
                         $to_user = [$user_create->manager];
                     }
                     
-                    if( $user->hasRole('Manager') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 50000000){
+                    if( $user->hasRole('Manager') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) >= 50000000){
                         $to_user = [$user_create->header];
                     }
                 }
@@ -832,7 +832,7 @@ class ClaimController extends Controller
                     if ($user->hasRole('ClaimGOP')) {
                         $to_user = Setting::findOrFail(1)->manager_gop_claim;
                     }
-                    if ($user->hasRole('ManagerGOP') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 50000000) {
+                    if ($user->hasRole('ManagerGOP') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) >= 50000000) {
                         $to_user = Setting::findOrFail(1)->header_claim;
                     }
                 }
