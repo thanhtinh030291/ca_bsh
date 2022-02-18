@@ -24,6 +24,10 @@
                             href="{{ url('admin/P/claim') }}"><span> {{ __('message.form_claim_P')}}</span></a>
                         </li>
                         @endhasanyrole
+                        <li class="{{ setActive('admin/mfile') }}"> 
+                            <a class="{{ setActive('admin/mfile') }}"
+                            href="{{ url('admin/mfile') }}"><span> M-file Management</span></a>
+                        </li>
                         @hasanyrole('Header|ManagerGOP|Admin|AdminClaim|view')
                         <li class="{{ setActive('admin/reportAdmins') }}"> 
                             <a class="{{ setActive('admin/reportAdmins') }}"
@@ -43,6 +47,10 @@
                         </li>
                         @endhasanyrole
                         @hasanyrole('Header|Manager|Admin|ManagerGOP|QC')
+                        <li class="{{ setActive('admin/HbsBenhead') }}"> 
+                            <a class="{{ setActive('admin/HbsBenhead') }}"
+                            href="{{ url('admin/HbsBenhead') }}"><span> HbsBenhead Management</span></a>
+                        </li>
                         <li class="{{ setActive('admin/product') }}"> 
                             <a class="{{ setActive('admin/product') }}"
                             href="{{ url('admin/product') }}"><span> {{ __('message.product')}}</span></a>

@@ -78,6 +78,7 @@ Route::group(['prefix' => 'admin'], function () {
 
         Route::resource('reason_reject', 'ReasonRejectController');
         Route::resource('product', 'ProductController');
+        Route::resource('HbsBenhead', 'HbsBenheadController');
         Route::resource('term', 'TermController');
         Route::resource('letter_template', 'LetterTemplateController');
 
@@ -163,6 +164,11 @@ Route::group(['prefix' => 'admin'], function () {
         
         // pocy 
         Route::resource('pocy', 'PocyManagementController');
+
+        //M-file
+        Route::resource('mfile', 'MfileController');
+        Route::post('mfile/check_all','MfileController@check_all')->middleware(['role:Admin']);
+        Route::post('mfile/update_all','MfileController@update_all')->middleware(['role:Admin']);
     });
 
 });
