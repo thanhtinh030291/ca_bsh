@@ -68,7 +68,7 @@ class CheckFinishAndPay extends Command
         $non_pay_many = FinishAndPay::where('notify',1)->where('finished', 1)->where('pay_time','!=', 1)->where('payed', 0)->get();
 
         foreach ($non_pay_many as $key => $value) {
-            $t = PaymentHistory::where('claim_id', $value->claim_id)->where('PAYMENT_TIME',$value->pay_time)->count();
+            $t = PaymentHistory::where('claim_id', $value->claim_id)->where('APP_AMT',$value->approve_amt)->count();
             if($t > 0){
                 FinishAndPay::where('cl_no', $value->cl_no)->update(['payed' => 1]);
             }
@@ -110,7 +110,6 @@ class CheckFinishAndPay extends Command
             } catch (Exception $e) {
                 DB::rollback();
             }
-           
         }
         
         dump("End : " . Carbon::now());
