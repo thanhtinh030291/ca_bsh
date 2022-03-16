@@ -24,6 +24,12 @@
                             href="{{ url('admin/P/claim') }}"><span> {{ __('message.form_claim_P')}}</span></a>
                         </li>
                         @endhasanyrole
+                        @hasanyrole('Header|ManagerGOP|Admin|Manager')
+                        <li class="{{ setActive('admin/claimExport') }}"> 
+                            <a class="{{ setActive('admin/claimExport') }}"
+                            href="{{ url('admin/claimExport') }}"><span>Report Default</span></a>
+                        </li>
+                        @endhasanyrole
                         <li class="{{ setActive('admin/mfile') }}"> 
                             <a class="{{ setActive('admin/mfile') }}"
                             href="{{ url('admin/mfile') }}"><span> M-file Management</span></a>
