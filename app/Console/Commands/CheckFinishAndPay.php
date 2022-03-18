@@ -82,7 +82,7 @@ class CheckFinishAndPay extends Command
         ->where('field_id', $client_approved_id) 
         ->where(function ($query) {
             $query->where('value','')
-            ->orWhere('value', null);
+            ->orWhere('value', null)->orWhere('value', "No");
         })
         ->pluck('bug_id')->toArray();
         $headers = [
