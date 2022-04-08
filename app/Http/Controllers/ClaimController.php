@@ -400,7 +400,7 @@ class ClaimController extends Controller
             $query->where('value','Yes')
             ->orWhere('value', 'Client Timeout');
         })->first();
-        if($count_ap > 0 && $ready_to_pay != null && $ready_to_pay2){
+        if($count_ap > 0 && ($ready_to_pay != null || $ready_to_pay2)){
             $can_pay_rq = true;
         }
         $manager_gop_accept_pay = 'error';
@@ -1682,6 +1682,7 @@ class ClaimController extends Controller
 
         // rang
         foreach ($DT as $key => $value) {
+            $limit = $this->getlimitDT($value);
             if($key == 0){
                 
                 $html .= '<tr>
