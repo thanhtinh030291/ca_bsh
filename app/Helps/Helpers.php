@@ -694,7 +694,7 @@ function getTokenCPS(){
             $client = new \GuzzleHttp\Client([
                 'headers' => $headers
             ]);
-            $response = $client->request("POST", config('constants.api_cps').'get_token22' , ['form_params'=>$body]);
+            $response = $client->request("POST", config('constants.api_cps').'get_token' , ['form_params'=>$body]);
             $response =  json_decode($response->getBody()->getContents());
             $token = data_get($response , 'access_token',null);
             if($token){
