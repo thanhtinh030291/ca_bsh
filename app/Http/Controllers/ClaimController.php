@@ -1592,7 +1592,7 @@ class ClaimController extends Controller
         $HbsBenhead = \App\HBS_PD_BEN_HEAD::whereNotNull('BEN_HEAD')->with('PD_BEN_HEAD_LANG')->get();
 
         $col_benefit = $lang == 'en' ? 'Benefits' : 'Quyền lợi bảo hiểm';
-        $col_submitted_amount = $lang == 'en' ? 'Submitted amount<br>(in VND)' : 'Số tiền yêu cầu bồi thường <br> (bằng VNĐ)';
+        $col_submitted_amount = $lang == 'en' ? 'Submitted amount' : 'Số tiền yêu cầu bồi thường';
         $col_paid_amount = $lang == 'en' ? 'Paid amount<br>(Based on validity documents)' : 'Số tiền bồi thường<br>(Căn cứ trên chứng từ hợp lệ)';
         $col_limit = $lang == 'en' ? 'Limit' : 'Giới hạn thanh toán';
         $code_desc = $lang == 'en' ? 'code_desc' : 'code_desc_vn';
