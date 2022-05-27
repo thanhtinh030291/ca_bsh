@@ -1623,17 +1623,16 @@ class ClaimController extends Controller
         foreach ($HBS_CL_CLAIM->HBS_CL_LINE as $keyCL_LINE => $valueCL_LINE) {
             $incur_date = "";
             $incur_date_from = $valueCL_LINE->incur_date_from;
-            $incur_date_to = $valueCL_LINE->to;
+            $incur_date_to = $valueCL_LINE->incur_date_to;
             if($incur_date_from == $incur_date_to || empty($incur_date_to)){
-                $incur_date = substr($incur_date_from,0,10);
+                $incur_date = Carbon::parse($incur_date_from)->format('d/m/Y');
             }else{
-                $incur_date = substr($incur_date_from,0,10) ." -- " .substr($incur_date_to,0,10);
+                $incur_date = Carbon::parse($incur_date_from)->format('d/m/Y') ." - " .Carbon::parse($incur_date_to)->format('d/m/Y');
             }
-           
             $data_ben_type[$incur_date][$valueCL_LINE->PD_BEN_HEAD->scma_oid_ben_type][] = $valueCL_LINE;
         }
-       
         $html .= '<tbody>';
+        ksort($data_ben_type);
         foreach ($data_ben_type as $incur => $GroupDate) {
             foreach ($GroupDate as $bentype => $GroupClaimLine) {
                 $html .= '<tr>
