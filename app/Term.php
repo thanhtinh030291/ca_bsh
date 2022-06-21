@@ -21,12 +21,12 @@ class Term extends BaseModel
     }
 
     public function getFullTextTermAttribute(){
-
+        $name_f = trim(explode("(", $this->name)[0]);
         $q = [  
                 'group' => explode(".", $this->name)[0],
-                'num'   => explode(".", $this->name)[1],
-                'name' => $this->name,
-                'content' => '<p style="font-size: 10pt; text-align: justify;"><span style="font-size: 10pt; font-family: arial, helvetica, sans-serif;">Điều ' .$this->name ." ". preg_replace('/(<p>)/', "", $this->description.'</span>', 1)
+                'num'   => $name_f,
+                'name' => $name_f,
+                'content' => '<li><span style="font-size: 10pt; font-family: arial, helvetica, sans-serif;">Điều '.$name_f  .": ". preg_replace('/(<p>)/', "", $this->description.'</span>' ). '</li>'
             ];
         return $q;
     }

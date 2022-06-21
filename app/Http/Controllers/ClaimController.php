@@ -1558,10 +1558,17 @@ class ClaimController extends Controller
         $content = str_replace('[[$add]]', empty($add) ? "" : implode(", ",$add) ,$content);
         $htm_infoReject = "";
         if ($deniedAmt != 0 || $CSRRemark) {
-            $htm_infoReject = "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 10pt;'>
-            Chúng tôi rất tiếc khoản tiền ".formatPrice($deniedAmt)." VNĐ còn lại không được thanh toán vì:
-            </span></p>" .
-            implode('', $CSRRemark) ."</br>". implode('', array_unique($TermRemark));
+            $htm_infoReject = "<p style='font-family: arial, helvetica, sans-serif; font-size: 10pt;'><span style='font-family: arial, helvetica, sans-serif; font-size: 10pt;'>
+            Số tiền không được bồi thường:  <strong style='font-family: arial, helvetica, sans-serif; font-size: 10pt;'>".formatPrice($deniedAmt). " VNĐ</strong>" .
+            "</span><br>" . 
+            "<span style='font-family: arial, helvetica, sans-serif; font-size: 10pt;'>Diễn giải:</span><br>" .
+            implode('<br>', $CSRRemark) ;
+            if(!empty($TermRemark)){
+                $htm_infoReject .= "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 10pt;'>Quý khách vui lòng tham khảo (các) điều khoản sau:</span></p><ul>" .
+                implode('', $TermRemark)."</ul></p>";
+            }else{
+                $htm_infoReject .= "</p>";
+            }
         }
         $content = str_replace('[[$infoReject]]', $htm_infoReject , $content);
 

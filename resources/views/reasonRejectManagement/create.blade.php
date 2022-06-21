@@ -23,7 +23,7 @@
                     {{ Form::text('name', old('name'), [ 'class' => 'form-control item-price','placeholder' => __('message.name'), 'required']) }}<br/>
 
                     {{ Form::label('term', __('message.term'), array('class' => 'labelas')) }} 
-                    {{ Form::select('term_id', $listTerm, old('term_id'), ['class' => ' select2 form-control', 'placeholder' => 'None']) }}<br>
+                    {{ Form::select('term_id[]', $listTerm, old('term_id'), ['class' => ' select2 form-control', 'placeholder' => 'None' ,'multiple' => 'multiple']) }}<br>
 
                     {{ Form::label('template', __('message.template')) }}
                     {{ Form::textarea('template', old('template'), ['id' => 'template_reject', 'class' => 'form-control editor2']) }}<br>
