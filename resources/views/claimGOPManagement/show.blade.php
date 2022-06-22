@@ -147,6 +147,25 @@ $totalAmount = 0;
                                         {{-- invoiceModal--}}
                                         @include('claimManagement.invoiceModal')
                                     </div>
+                                    <div class="card mt-2">
+                                        {{ Form::open(array('url' => '/admin/claim/updateInvoice/'.$data->id, 'method'=>'post', 'files' => true))}}
+                                        <table>
+                                            <thead>
+                                                <th style="width:20%">Invoice No</th>
+                                                <th style="width:80%">Link</th>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($inv_merge as $item)
+                                                    <tr>
+                                                        <td>{{Form::text('inv_nos', data_get($item,'inv_no'), [ 'class' => 'form-control','readonly' =>'readonly','required'])}}</td>
+                                                        <td>{{Form::text("link[".data_get($item,'inv_no')."]",data_get($item,'link'), [ 'class' => 'form-control','required'])}}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        {!! Form::button('save', [ 'type' => 'submit', 'class' => ' btn btn-info' ]) !!}
+                                        {{ Form::close() }}
+                                    </div>
                                 </div>
                                 <div class="col-md-5">
                                     {{ Form::open(array('url' => '/admin/claim/uploadSortedFileGOP/'.$data->id, 'method'=>'post', 'files' => true))}}

@@ -350,6 +350,22 @@ class ClaimController extends Controller
             
             $payment_history_cps = json_decode(AjaxCommonController::getPaymentHistoryCPS($data->code_claim_show)->getContent(),true);
             $inv_nos = $HBS_CL_CLAIM->InvNo;
+            $inv_hbs = array_filter(explode(",", $inv_nos));
+            $inv_ca = $claim->invoice->pluck('link','inv_no')->toArray();
+            $inv_merge = [];
+            foreach ($inv_hbs as $key => $value) {
+                if(isset($inv_ca[$value])){
+                    $inv_merge[] = [
+                        'inv_no' => $value,
+                        'link' => $inv_ca[$value]
+                    ];
+                }else{
+                    $inv_merge[] = [
+                        'inv_no' => $value,
+                        'link' => ""
+                    ];
+                }
+            }
             $payment_history = data_get($payment_history_cps,'data_full',[]);
             $approve_amt = data_get($payment_history_cps,'approve_amt');
             $present_amt = data_get($payment_history_cps,'present_amt');
@@ -365,6 +381,7 @@ class ClaimController extends Controller
             $tranfer_amt = $claim->include_admin_fee == 1 ? $tranfer_amt : ($tranfer_amt - (int)$adminFee);
             
         } catch (\Throwable $th) {
+            $inv_merge = [];
             $payment_history = [];
             $approve_amt = 0;
             $tranfer_amt = 0;
@@ -422,7 +439,8 @@ class ClaimController extends Controller
         $compact = compact(['data', 'dataImage', 'items', 'admin_list', 'listReasonReject', 
         'listLetterTemplate' , 'list_status_ad', 'user', 'payment_history', 'approve_amt','tranfer_amt','present_amt',
         'payment_method','pocy_no','memb_no', 'member_name', 'balance_cps', 'can_pay_rq',
-        'CsrFile','manager_gop_accept_pay','hospital_request', 'list_diagnosis', 'selected_diagnosis', 'fromEmail','reject_code','IS_FREEZED','adminFee','inv_nos','btn_notication','renderMessageInvoice'
+        'CsrFile','manager_gop_accept_pay','hospital_request', 'list_diagnosis', 'selected_diagnosis', 'fromEmail',
+        'reject_code','IS_FREEZED','adminFee','inv_nos','btn_notication','renderMessageInvoice','inv_merge'
         ]);
         if ($claim_type == 'P'){
             return view('claimGOPManagement.show', $compact);
@@ -1956,6 +1974,16 @@ class ClaimController extends Controller
         if($HBS_CL_LINE->scma_oid_cl_payment_method == null){
             return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có phương thức thanh toán , Vui lòng (Ament -> Update) lại HBS , và thử lại sau'); 
         }
+        if($HBS_CL_CLAIM->SumAppAmt > 200000){
+            $inv_hbs =  $HBS_CL_CLAIM->invNo;
+            $arr_inv_hbs = array_filter(explode(",", $inv_hbs));
+            $arr_inv_ca = array_filter($claim->invoice->pluck('inv_no')->toArray());
+            $diff = array_diff($arr_inv_hbs,$arr_inv_ca);
+            if(!empty($diff)){
+                return redirect('/admin/claim/'.$id)->with('errorStatus', 'vui lòng nhập đường dẫn cho các hóa đơn sau : '. implode(", ", $diff)); 
+            }
+        }
+
         switch ($HBS_CL_CLAIM->payMethod) {
             case 'CL_PAYMENT_METHOD_TT':
                 if($HBS_CL_LINE->bank_name == null || $HBS_CL_LINE->acct_name == null || $HBS_CL_LINE->acct_no == null){
@@ -1978,6 +2006,7 @@ class ClaimController extends Controller
             default:
                 break;
         }
+        
         $rp = AjaxCommonController::sendPayment($request,$id);
         switch (data_get($rp,'code')) {
             case '00':
@@ -2779,5 +2808,26 @@ class ClaimController extends Controller
             $datas = collect([]);
         }
         return view('claimManagement.export', compact('finder', 'datas', 'admin_list'));
+    }
+
+    public function updateInvoice(Request $request, $claim_id){
+        $request->validate([
+            'link.*' => 'required|url',
+        ],[
+            'url' => 'đường dẫn không hợp lệ vd : http://bbb.com/dsdsd  or https://ca-bbb.com/dsdsd',
+        ]);
+        $user = Auth::User();
+        if($request->link == null){
+            return redirect('/admin/claim/'.$claim_id)->with('errorStatus',"không tồn tại inv để lưu trữ");
+        }
+        $invos = array_keys($request->link);
+        \App\Invoice::where('claim_id' , $claim_id)->whereNotIn('inv_no',$invos)->delete();
+        foreach ( $request->link as $key => $value) {
+            \App\Invoice::updateOrCreate(
+                ['claim_id' => $claim_id, 'inv_no' => $key], 
+                ['link' => $value,'created_user' => $user->id ,'updated_user' => $user->id]
+            );
+        }
+        return redirect('/admin/claim/'.$claim_id)->with('status',"Cập nhật invoice thanh công");
     }
 }

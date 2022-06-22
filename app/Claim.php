@@ -40,7 +40,10 @@ class Claim extends BaseModel
     {
         return $this->hasMany('App\ExportLetter', 'claim_id')->orderBy('id', 'desc');
     }
-
+    public function invoice()
+    {
+        return $this->hasMany('App\Invoice', 'claim_id')->orderBy('id', 'desc');
+    }
     public function export_letter_last()
     {
         return $this->hasOne('App\ExportLetter', 'claim_id')->orderBy('id', 'desc')->latest();
