@@ -1975,13 +1975,13 @@ class ClaimController extends Controller
             return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có phương thức thanh toán , Vui lòng (Ament -> Update) lại HBS , và thử lại sau'); 
         }
         if($HBS_CL_CLAIM->SumAppAmt > 200000){
-            $inv_hbs =  $HBS_CL_CLAIM->invNo;
-            $arr_inv_hbs = array_filter(explode(",", $inv_hbs));
-            $arr_inv_ca = array_filter($claim->invoice->pluck('inv_no')->toArray());
-            $diff = array_diff($arr_inv_hbs,$arr_inv_ca);
-            if(!empty($diff)){
-                return redirect('/admin/claim/'.$id)->with('errorStatus', 'vui lòng nhập đường dẫn cho các hóa đơn sau : '. implode(", ", $diff)); 
-            }
+            // $inv_hbs =  $HBS_CL_CLAIM->invNo;
+            // $arr_inv_hbs = array_filter(explode(",", $inv_hbs));
+            // $arr_inv_ca = array_filter($claim->invoice->pluck('inv_no')->toArray());
+            // $diff = array_diff($arr_inv_hbs,$arr_inv_ca);
+            // if(!empty($diff)){
+            //     return redirect('/admin/claim/'.$id)->with('errorStatus', 'vui lòng nhập đường dẫn cho các hóa đơn sau : '. implode(", ", $diff)); 
+            // }
         }
 
         switch ($HBS_CL_CLAIM->payMethod) {
