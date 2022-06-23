@@ -470,7 +470,7 @@ function IOPDiag($HBS_CL_CLAIM, $claim_id , $lang = null){
             }
         }
     }
-    $IOPDiag = implode('',  $IOPDiag_f);
+    $IOPDiag = implode('<br>',  $IOPDiag_f);
     return $IOPDiag;
 }
 
