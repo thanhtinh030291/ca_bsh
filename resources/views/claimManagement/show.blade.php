@@ -526,6 +526,10 @@ $totalAmount = 0;
 <script src="{{ asset('js/jquery.tag-editor.min.js?vision=') .$vision }}"></script>
 <script>
     $("#url_form_request").fileinput();
+    @php
+        $name_lock = \App\LetterTemplate::where('lock',1)->pluck('name');    
+    @endphp
+    var arr_lt = @json($name_lock);
     function sendMailCustomerModal(e){
         var claim_id =  e.dataset.claim_id;
         var id = e.dataset.id;
@@ -547,10 +551,8 @@ $totalAmount = 0;
         $('.ex_claim_id').val(claim_id);
         tinymce.get("preview_letter").setContent("");
         //CKEDITOR.instances['preview_letter'].setData("");
-        if(letter_name == "Thư thông báo bồi thường"){
+        if(arr_lt.includes(letter_name) == true){
                 tinyMCE.get('preview_letter').setMode('readonly');
-        }else{
-                tinyMCE.get('preview_letter').setMode('design');
         }
         $.ajax({
         url: '/admin/previewLetter',
@@ -574,10 +576,8 @@ $totalAmount = 0;
         var list_status = e.dataset.liststatus;
         var letter_name = e.dataset.letter_name;
         @hasanyrole('Claim Independent|Admin')
-            if(letter_name == "Thư thông báo bồi thường"){
+            if(arr_lt.includes(letter_name) == true){
                 tinyMCE.get('note_letter').setMode('readonly');
-            }else{
-                tinyMCE.get('note_letter').setMode('design');
             }
         @endhasanyrole
         if(status == {{ config('constants.statusExport.edit')}}){
