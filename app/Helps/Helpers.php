@@ -586,7 +586,7 @@ function CSRRemark_TermRemark($claim){
             $show_term[] = $value_c['content'];
         }
     }
-    return [ 'CSRRemark' => $CSRRemark , 'TermRemark' => $show_term , 'itemsReject' => $itemsReject , 'sumAmountReject' => $sumAmountReject];
+    return [ 'CSRRemark' => $CSRRemark , 'TermRemark' => array_unique($show_term) , 'itemsReject' => $itemsReject , 'sumAmountReject' => $sumAmountReject];
 }
 
 function note_pay($export_letter){
